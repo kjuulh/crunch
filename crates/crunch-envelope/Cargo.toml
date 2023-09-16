@@ -1,0 +1,27 @@
+[package]
+name = "crunch-envelope"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[[bench]]
+name = "envelope_benchmark"
+harness = false
+
+[features]
+default = ["json"]
+json = ["dep:serde", "dep:serde_json", "dep:base64"]
+
+[dependencies]
+capnp = "0.17.2"
+thiserror.workspace = true
+serde = { version = "1.0.188" ,optional = true, features = ["derive"] }
+serde_json = {version = "1.0.107",optional = true}
+base64 = {version = "0.21.4",optional = true}
+
+[build-dependencies]
+capnpc = "0.17.2"
+
+[dev-dependencies]
+criterion = { version = "0.4" }

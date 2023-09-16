@@ -4,6 +4,7 @@ resolver = "2"
 
 [workspace.dependencies]
 crunch = { path = "crates/crunch" }
+crunch-envelope = { path = "crates/crunch-envelope" }
 
 anyhow = { version = "1.0.71" }
 tokio = { version = "1", features = ["full"] }
