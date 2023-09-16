@@ -5,9 +5,5 @@ edition = "2021"
 
 [dependencies]
 anyhow.workspace = true
-tokio.workspace = true
 tracing.workspace = true
-tracing-subscriber.workspace = true
-clap.workspace = true
-dotenv.workspace = true
-axum.workspace = true
+tokio.workspace = true
