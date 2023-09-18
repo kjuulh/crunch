@@ -9,6 +9,9 @@ edition = "2021"
 name = "envelope_benchmark"
 harness = false
 
+[profile.bench]
+debug = true
+
 [features]
 default = ["json"]
 json = ["dep:serde", "dep:serde_json", "dep:base64"]

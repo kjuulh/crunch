@@ -730,6 +730,13 @@ dependencies = [
 ]
 
 [[package]]
+name = "test-bin"
+version = "0.1.0"
+dependencies = [
+ "crunch-envelope",
+]
+
+[[package]]
 name = "textwrap"
 version = "0.16.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
