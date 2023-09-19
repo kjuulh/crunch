@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+package crunch.envelope;
+
+message Envelope {
+    Metadata metadata = 1;
+    bytes content = 2;
+}
+
+message Metadata {
+    string domain = 1;
+    string entity = 2;
+    uint64 timestamp = 3;
+    uint64 sequence = 4;
+}

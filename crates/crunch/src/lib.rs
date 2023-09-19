@@ -48,6 +48,7 @@ mod impls {
     use crate::{traits, EventInfo};
 
     pub struct InMemoryPersistence {}
+
     #[async_trait]
     impl traits::Persistence for InMemoryPersistence {
         async fn insert(&self, event_info: &EventInfo, content: Vec<u8>) -> anyhow::Result<()> {

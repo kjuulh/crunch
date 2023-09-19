@@ -7,4 +7,6 @@ fn main() {
         .file("schemas/envelope.capnp")
         .run()
         .unwrap();
+
+    prost_build::compile_protos(&["src/envelope.proto"], &["src/"]).unwrap();
 }

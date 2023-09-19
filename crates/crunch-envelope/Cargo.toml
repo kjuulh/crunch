@@ -13,18 +13,27 @@ harness = false
 debug = true
 
 [features]
-default = ["json"]
+default = ["json", "proto"]
 json = ["dep:serde", "dep:serde_json", "dep:base64"]
+proto = ["dep:prost", "dep:prost-types", "dep:bytes"]
 
 [dependencies]
 capnp = "0.17.2"
 thiserror.workspace = true
+
+# Json
 serde = { version = "1.0.188" ,optional = true, features = ["derive"] }
 serde_json = {version = "1.0.107",optional = true}
 base64 = {version = "0.21.4",optional = true}
 
+# Proto
+prost = {version  = "0.12", optional = true}
+prost-types = {version = "0.12", optional = true}
+bytes = {version = "0.4", optional = true}
+
 [build-dependencies]
 capnpc = "0.17.2"
+prost-build = "0.5"
 
 [dev-dependencies]
 criterion = { version = "0.4" }

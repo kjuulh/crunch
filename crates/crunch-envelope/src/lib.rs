@@ -3,9 +3,17 @@ mod envelope_capnp;
 #[cfg(feature = "json")]
 mod json_envelope;
 
+#[cfg(feature = "proto")]
+mod proto_envelope;
+
 #[cfg(feature = "json")]
 pub mod json {
     pub use crate::json_envelope::*;
+}
+
+#[cfg(feature = "proto")]
+pub mod proto {
+    pub use crate::proto_envelope::*;
 }
 
 use capnp::message::{Builder, ReaderOptions};
@@ -22,6 +30,11 @@ pub enum EnvelopeError {
     #[cfg(feature = "json")]
     #[error("base64 failed to serialize or deserialize code")]
     Base64Error(#[source] base64::DecodeError),
+    #[cfg(feature = "proto")]
+    #[error("prost failed to serialize or deserialize code")]
+    ProtoError(#[source] prost::DecodeError),
+    #[error("metadata is missing from field")]
+    MetadataError(),
 }
 
 pub fn wrap<'a>(domain: &'a str, entity: &'a str, content: &'a [u8]) -> Vec<u8> {
