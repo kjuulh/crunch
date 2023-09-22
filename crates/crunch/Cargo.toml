@@ -4,11 +4,16 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
+crunch-envelope.workspace = true
+
 anyhow.workspace = true
 tracing.workspace = true
 tokio.workspace = true
+tokio-stream.workspace = true
 thiserror.workspace = true
 async-trait.workspace = true
+uuid.workspace = true
+futures.workspace = true
 
 [dev-dependencies]
 tracing-subscriber.workspace = true
