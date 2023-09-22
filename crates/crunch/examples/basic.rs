@@ -1,4 +1,4 @@
-use crunch::{Deserializer, Event, EventInfo, Persistence, Publisher, Serializer};
+use crunch::{Deserializer, Event, EventInfo, OutboxHandler, Persistence, Publisher, Serializer};
 
 struct SomeEvent {
     name: String,
@@ -11,7 +11,7 @@ impl Serializer for SomeEvent {
 }
 
 impl Deserializer for SomeEvent {
-    fn deserialize(raw: Vec<u8>) -> Result<Self, crunch::DeserializeError>
+    fn deserialize(_raw: Vec<u8>) -> Result<Self, crunch::DeserializeError>
     where
         Self: Sized,
     {
@@ -35,6 +35,7 @@ async fn main() -> anyhow::Result<()> {
     tracing_subscriber::fmt::init();
 
     let in_memory = Persistence::in_memory();
+    OutboxHandler::new(in_memory.clone()).spawn();
     let publisher = Publisher::new(in_memory);
 
     publisher
@@ -42,6 +43,28 @@ async fn main() -> anyhow::Result<()> {
             name: "something".into(),
         })
         .await?;
+    publisher
+        .publish(SomeEvent {
+            name: "something".into(),
+        })
+        .await?;
+    publisher
+        .publish(SomeEvent {
+            name: "something".into(),
+        })
+        .await?;
+    publisher
+        .publish(SomeEvent {
+            name: "something".into(),
+        })
+        .await?;
+    publisher
+        .publish(SomeEvent {
+            name: "something".into(),
+        })
+        .await?;
+
+    tokio::time::sleep(std::time::Duration::from_secs(5)).await;
 
     Ok(())
 }

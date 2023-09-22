@@ -1,14 +1,13 @@
 use std::fmt::Display;
 
 use async_trait::async_trait;
-use tokio::sync::OnceCell;
 
 use crate::{DeserializeError, SerializeError};
 
 #[async_trait]
 pub trait Persistence {
     async fn insert(&self, event_info: &EventInfo, content: Vec<u8>) -> anyhow::Result<()>;
-    async fn next(&self) -> Option<OnceCell<String>>;
+    async fn next(&self) -> Option<String>;
 }
 
 pub trait Serializer {

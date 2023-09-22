@@ -1,8 +1,7 @@
-use std::{collections::VecDeque, future::Future, ops::Deref, pin::Pin, sync::Arc, task::Poll};
+use std::{collections::VecDeque, ops::Deref, sync::Arc};
 
 use async_trait::async_trait;
-use tokio::sync::{Mutex, OnceCell, RwLock};
-use tokio_stream::Stream;
+use tokio::sync::RwLock;
 
 use crate::{traits, EventInfo};
 
@@ -30,7 +29,6 @@ impl traits::Persistence for InMemoryPersistence {
         let msg = crunch_envelope::proto::wrap(event_info.domain, event_info.entity_type, &content);
 
         let mut outbox = self.outbox.write().await;
-
         outbox.push_back(Msg {
             id: uuid::Uuid::new_v4().to_string(),
             info: event_info.clone(),
@@ -56,7 +54,6 @@ impl traits::Persistence for InMemoryPersistence {
 #[derive(Clone)]
 pub struct Persistence {
     inner: Arc<dyn traits::Persistence + Send + Sync + 'static>,
-    pending: Arc<Option<Pin<Box<dyn Future<Output = Option<OnceCell<String>>> + Send + Sync>>>>,
 }
 
 impl Persistence {
@@ -65,7 +62,6 @@ impl Persistence {
             inner: Arc::new(InMemoryPersistence {
                 outbox: Arc::default(),
             }),
-            pending: Arc::default(),
         }
     }
 }
@@ -75,30 +71,5 @@ impl Deref for Persistence {
 
     fn deref(&self) -> &Self::Target {
         &self.inner
-    }
-}
-
-impl Stream for Persistence {
-    type Item = OnceCell<String>;
-
-    fn poll_next(
-        self: std::pin::Pin<&mut Self>,
-        cx: &mut std::task::Context<'_>,
-    ) -> Poll<Option<Self::Item>> {
-        let mut pending = self.pending;
-
-        if pending.is_none() {
-            *pending = Some(Box::pin(self.inner.next()));
-        }
-
-        let fut = pending.as_mut().unwrap();
-
-        match fut.as_mut().poll(cx) {
-            Poll::Ready(v) => {
-                *pending = None;
-                Poll::Ready(v)
-            }
-            Poll::Pending => Poll::Pending,
-        }
     }
 }

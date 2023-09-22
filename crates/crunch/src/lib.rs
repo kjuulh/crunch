@@ -4,12 +4,11 @@ mod traits;
 
 pub use errors::*;
 pub use impls::Persistence;
+pub use outbox::OutboxHandler;
 pub use traits::{Deserializer, Event, EventInfo, Serializer};
 
 mod outbox {
-    use std::sync::Arc;
-
-    pub use crate::Persistence;
+    use crate::Persistence;
 
     pub struct OutboxHandler {
         persistence: Persistence,
@@ -20,12 +19,19 @@ mod outbox {
             Self { persistence }
         }
 
-        pub async fn spawn(&mut self) {
+        pub fn spawn(&mut self) {
             let p = self.persistence.clone();
             tokio::spawn(async move {
-                let p = p;
-
-                while let Some(item) = p.next().await {}
+                loop {
+                    match p.next().await {
+                        Some(item) => {
+                            tracing::info!("got item: {}", item);
+                        }
+                        None => {
+                            tokio::time::sleep(std::time::Duration::from_millis(50)).await;
+                        }
+                    }
+                }
             });
         }
     }
