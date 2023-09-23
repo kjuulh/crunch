@@ -2,6 +2,7 @@ use crunch_traits::{errors::PublishError, Event};
 
 use crate::Persistence;
 
+#[derive(Clone)]
 pub struct Publisher {
     persistence: Persistence,
 }

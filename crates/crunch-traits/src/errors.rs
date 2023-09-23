@@ -53,3 +53,9 @@ pub enum PersistenceError {
     #[error("failed to publish item {0}")]
     UpdatePublished(anyhow::Error),
 }
+
+#[derive(Error, Debug)]
+pub enum BuilderError {
+    #[error("dependency not added to builder: {0}")]
+    DependencyError(anyhow::Error),
+}

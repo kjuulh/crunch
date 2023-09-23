@@ -1,6 +1,7 @@
 use crunch::errors::*;
 use crunch::traits::Event;
 
+#[derive(Clone)]
 struct SomeEvent {
     name: String,
 }
@@ -36,50 +37,49 @@ impl crunch::traits::Event for SomeEvent {
 async fn main() -> anyhow::Result<()> {
     tracing_subscriber::fmt::init();
 
-    let in_memory = crunch::Persistence::in_memory();
-    let transport = crunch::Transport::in_memory();
-    crunch::OutboxHandler::new(in_memory.clone(), transport.clone()).spawn();
-    let publisher = crunch::Publisher::new(in_memory);
-    let subscriber = crunch::Subscriber::new(transport);
+    let crunch = crunch::builder::Builder::default().build()?;
+    let counter = std::sync::Arc::new(std::sync::atomic::AtomicUsize::new(0));
 
-    subscriber
-        .subscribe(|item: SomeEvent| async move {
-            tracing::info!(
-                "subscription got event: {}, info: {}",
-                item.name,
-                item.int_event_info(),
-            );
-            Ok(())
-        })
-        .await?;
+    let inner_counter = counter.clone();
+    crunch
+        .subscribe(move |item: SomeEvent| {
+            let counter = inner_counter.clone();
 
-    publisher
-        .publish(SomeEvent {
-            name: "something".into(),
-        })
-        .await?;
-    publisher
-        .publish(SomeEvent {
-            name: "something".into(),
-        })
-        .await?;
-    publisher
-        .publish(SomeEvent {
-            name: "something".into(),
-        })
-        .await?;
-    publisher
-        .publish(SomeEvent {
-            name: "something".into(),
-        })
-        .await?;
-    publisher
-        .publish(SomeEvent {
-            name: "something".into(),
+            async move {
+                tracing::info!(
+                    "subscription got event: {}, info: {}",
+                    item.name,
+                    item.int_event_info(),
+                );
+
+                counter.fetch_add(1, std::sync::atomic::Ordering::SeqCst);
+                Ok(())
+            }
         })
         .await?;
 
-    tokio::time::sleep(std::time::Duration::from_secs(5)).await;
+    let event = SomeEvent {
+        name: "something".into(),
+    };
+
+    for _ in 0..50 {
+        tokio::spawn({
+            let event = event.clone();
+            let crunch = crunch.clone();
+
+            async move {
+                loop {
+                    crunch.publish(event.clone()).await.unwrap();
+                    tokio::time::sleep(std::time::Duration::from_millis(1)).await;
+                }
+            }
+        });
+    }
+
+    tokio::time::sleep(std::time::Duration::from_secs(30)).await;
+
+    let amount_run = counter.load(std::sync::atomic::Ordering::SeqCst);
+    tracing::error!("ran {} amount of times", amount_run);
 
     Ok(())
 }
