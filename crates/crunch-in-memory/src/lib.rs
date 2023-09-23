@@ -33,7 +33,7 @@ impl InMemoryTransport {
             events.insert(transport_key.clone(), sender);
             tokio::spawn(async move {
                 while let Ok(item) = receiver.recv().await {
-                    tracing::info!("default receiver: {}", item.info.transport_name());
+                    tracing::trace!("default receiver: {}", item.info.transport_name());
                 }
             });
         }

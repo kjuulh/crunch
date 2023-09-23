@@ -41,7 +41,7 @@ impl crunch_traits::Persistence for InMemoryPersistence {
         outbox.push_back(msg.clone());
         self.store.write().await.insert(msg.id.clone(), msg);
 
-        tracing::info!(
+        tracing::debug!(
             event_info = event_info.to_string(),
             content_len = content.len(),
             "inserted event"
