@@ -42,6 +42,9 @@ Domain events works off of the principle that your interface is protobuf, as suc
 
 To handle this workflow we introduce `crunch.toml` a file to manage these relationships.
 
+!!! info
+    Bootstrap the file using `crunch init`, see [crunch cli](crates/crunch-cli) for more info, it can automatically discover and add subscriptions, bump version, publish schemas etc.
+
 ```toml
 [service]
 codegen = ["rust"]
