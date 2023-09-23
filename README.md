@@ -89,7 +89,7 @@ We recommend wrapping and exposing the parts you need to the library, so that yo
 
 You will need a transport of some sort. Transport is what transfers messages between services, crunch is built to be configurable, and unopinionated, as such most messaging protocols should work fine. 
 
-- [ ] [NATS (recommended)](crates/crunch-transport-nats)
+- [x] [NATS (recommended)](crates/crunch-transport-nats)
 - [x] [Tokio channel (used for in-memory processing)](crates/crunch-transport-tokio-channel)
 
 ### Persistence

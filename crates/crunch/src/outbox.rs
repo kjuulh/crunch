@@ -39,7 +39,7 @@ async fn handle_messages(p: &Persistence, t: &Transport) -> anyhow::Result<Optio
             Some((info, content)) => {
                 t.publish(&info, content).await?;
                 p.update_published(&item).await?;
-                tracing::info!("published item: {}", item);
+                tracing::debug!("published item: {}", item);
             }
             None => {
                 tracing::info!("did not find any events for item: {}", item);

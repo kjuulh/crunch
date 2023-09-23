@@ -24,7 +24,7 @@ impl NatsTransport {
                 nats::asynk::Options::with_user_pass(user, pass)
                     .connect(options.host)
                     .await
-                    .map_err(|e| anyhow::anyhow!(e))
+                    .map_err(|e| anyhow::anyhow!("failed to connect with username password: {}", e))
                     .map_err(TransportError::Err)?
             }
         };
@@ -60,6 +60,7 @@ impl Transport for NatsTransport {
             .map_err(TransportError::Err)?;
 
         let stream = futures::stream::unfold(sub, |sub| async move {
+            tracing::trace!("got event from nats");
             let next = sub.next().await?;
             let next = next.data;
             Some((next, sub))

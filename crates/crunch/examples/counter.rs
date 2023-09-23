@@ -62,6 +62,7 @@ async fn main() -> anyhow::Result<()> {
         name: "something".into(),
     };
 
+    // Publish a lot of events
     for _ in 0..50 {
         tokio::spawn({
             let event = event.clone();
@@ -79,7 +80,7 @@ async fn main() -> anyhow::Result<()> {
     tokio::time::sleep(std::time::Duration::from_secs(30)).await;
 
     let amount_run = counter.load(std::sync::atomic::Ordering::SeqCst);
-    tracing::error!("ran {} amount of times", amount_run);
+    tracing::info!("ran {} amount of times", amount_run);
 
     Ok(())
 }

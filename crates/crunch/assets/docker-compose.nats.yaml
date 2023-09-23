@@ -1,0 +1,12 @@
+version: '3'
+
+services:
+  nats:
+    image: bitnami/nats:2.10.1
+    ports:
+      - "4222:4222"
+    environment:
+      - NATS_ENABLE_AUTH=yes
+      - NATS_USERNAME=user
+      - NATS_PASSWORD=secret
+
