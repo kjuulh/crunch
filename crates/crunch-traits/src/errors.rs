@@ -28,6 +28,18 @@ pub enum PublishError {
 }
 
 #[derive(Error, Debug)]
+pub enum SubscriptionError {
+    #[error("failed to subscribe: {0}")]
+    FailedToSubscribe(#[source] anyhow::Error),
+
+    #[error("connection failed: {0}")]
+    ConnectionFailed(#[source] TransportError),
+
+    #[error("failed to deserialize{0}")]
+    DeserializationFailed(#[source] DeserializeError),
+}
+
+#[derive(Error, Debug)]
 pub enum TransportError {
     #[error("to publish to transport {0}")]
     Err(anyhow::Error),

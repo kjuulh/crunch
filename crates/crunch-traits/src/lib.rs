@@ -38,7 +38,11 @@ impl Display for EventInfo {
 }
 
 pub trait Event: Serializer + Deserializer {
-    fn event_info(&self) -> EventInfo;
+    fn event_info() -> EventInfo;
+
+    fn int_event_info(&self) -> EventInfo {
+        Self::event_info()
+    }
 }
 
 pub mod errors;

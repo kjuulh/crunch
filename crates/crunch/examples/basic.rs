@@ -1,4 +1,5 @@
 use crunch::errors::*;
+use crunch::traits::Event;
 
 struct SomeEvent {
     name: String,
@@ -22,7 +23,7 @@ impl crunch::traits::Deserializer for SomeEvent {
 }
 
 impl crunch::traits::Event for SomeEvent {
-    fn event_info(&self) -> crunch::traits::EventInfo {
+    fn event_info() -> crunch::traits::EventInfo {
         crunch::traits::EventInfo {
             domain: "some-domain",
             entity_type: "some-entity",
@@ -39,6 +40,18 @@ async fn main() -> anyhow::Result<()> {
     let transport = crunch::Transport::in_memory();
     crunch::OutboxHandler::new(in_memory.clone(), transport.clone()).spawn();
     let publisher = crunch::Publisher::new(in_memory);
+    let subscriber = crunch::Subscriber::new(transport);
+
+    subscriber
+        .subscribe(|item: SomeEvent| async move {
+            tracing::info!(
+                "subscription got event: {}, info: {}",
+                item.name,
+                item.int_event_info(),
+            );
+            Ok(())
+        })
+        .await?;
 
     publisher
         .publish(SomeEvent {

@@ -332,8 +332,10 @@ dependencies = [
  "anyhow",
  "async-trait",
  "crunch-traits",
+ "futures",
  "thiserror",
  "tokio",
+ "tokio-stream",
  "tracing",
 ]
 
@@ -343,6 +345,7 @@ version = "0.1.0"
 dependencies = [
  "anyhow",
  "async-trait",
+ "futures",
  "thiserror",
  "tokio",
  "uuid",
@@ -1218,6 +1221,20 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "397c988d37662c7dda6d2208364a706264bf3d6138b11d436cbac0ad38832842"
 dependencies = [
  "futures-core",
+ "pin-project-lite",
+ "tokio",
+ "tokio-util",
+]
+
+[[package]]
+name = "tokio-util"
+version = "0.7.8"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "806fe8c2c87eccc8b3267cbae29ed3ab2d0bd37fca70ab622e46aaa9375ddb7d"
+dependencies = [
+ "bytes 1.5.0",
+ "futures-core",
+ "futures-sink",
  "pin-project-lite",
  "tokio",
 ]

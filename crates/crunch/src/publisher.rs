@@ -19,7 +19,7 @@ impl Publisher {
         let content = event.serialize().map_err(PublishError::SerializeError)?;
 
         self.persistence
-            .insert(&event.event_info(), content)
+            .insert(&event.int_event_info(), content)
             .await
             .map_err(PublishError::DbError)?;
 
