@@ -8,5 +8,11 @@ fn main() {
         .run()
         .unwrap();
 
-    prost_build::compile_protos(&["src/envelope.proto"], &["src/"]).unwrap();
+    std::fs::create_dir_all("src/generated").unwrap();
+    let mut config = prost_build::Config::default();
+    config.out_dir("src/generated/");
+
+    config
+        .compile_protos(&["src/envelope.proto"], &["src/"])
+        .unwrap();
 }

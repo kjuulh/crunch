@@ -5,6 +5,8 @@ edition = "2021"
 
 [dependencies]
 crunch-envelope.workspace = true
+crunch-in-memory = { workspace = true, optional = true }
+crunch-traits.workspace = true
 
 anyhow.workspace = true
 tracing.workspace = true
@@ -17,3 +19,8 @@ futures.workspace = true
 
 [dev-dependencies]
 tracing-subscriber.workspace = true
+
+[features]
+default = ["in-memory", "traits"]
+traits = []
+in-memory = ["dep:crunch-in-memory"]

@@ -3,6 +3,7 @@ mod envelope_capnp;
 #[cfg(feature = "json")]
 mod json_envelope;
 
+mod generated;
 #[cfg(feature = "proto")]
 mod proto_envelope;
 

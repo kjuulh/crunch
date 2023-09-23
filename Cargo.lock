@@ -297,6 +297,8 @@ dependencies = [
  "anyhow",
  "async-trait",
  "crunch-envelope",
+ "crunch-in-memory",
+ "crunch-traits",
  "futures",
  "thiserror",
  "tokio",
@@ -321,6 +323,29 @@ dependencies = [
  "serde",
  "serde_json",
  "thiserror",
+]
+
+[[package]]
+name = "crunch-in-memory"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "async-trait",
+ "crunch-traits",
+ "thiserror",
+ "tokio",
+ "tracing",
+]
+
+[[package]]
+name = "crunch-traits"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "async-trait",
+ "thiserror",
+ "tokio",
+ "uuid",
 ]
 
 [[package]]

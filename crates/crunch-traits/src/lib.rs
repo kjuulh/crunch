@@ -1,13 +1,14 @@
-use std::fmt::Display;
+use std::{fmt::Display, sync::Arc};
 
 use async_trait::async_trait;
-
-use crate::{DeserializeError, SerializeError};
+use errors::{DeserializeError, PersistenceError, SerializeError, TransportError};
 
 #[async_trait]
 pub trait Persistence {
     async fn insert(&self, event_info: &EventInfo, content: Vec<u8>) -> anyhow::Result<()>;
     async fn next(&self) -> Option<String>;
+    async fn get(&self, event_id: &str) -> Result<Option<(EventInfo, Vec<u8>)>, PersistenceError>;
+    async fn update_published(&self, event_id: &str) -> Result<(), PersistenceError>;
 }
 
 pub trait Serializer {
@@ -24,6 +25,7 @@ pub trait Deserializer {
 pub struct EventInfo {
     pub domain: &'static str,
     pub entity_type: &'static str,
+    pub event_name: &'static str,
 }
 
 impl Display for EventInfo {
@@ -38,3 +40,7 @@ impl Display for EventInfo {
 pub trait Event: Serializer + Deserializer {
     fn event_info(&self) -> EventInfo;
 }
+
+pub mod errors;
+mod transport;
+pub use transport::*;
