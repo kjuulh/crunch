@@ -1,3 +1,4 @@
+#[allow(dead_code)]
 mod envelope_capnp;
 
 #[cfg(feature = "json")]
@@ -46,8 +47,6 @@ pub fn wrap<'a>(domain: &'a str, entity: &'a str, content: &'a [u8]) -> Vec<u8> 
     let mut metadata = envelope.init_metadata();
     metadata.set_domain(domain);
     metadata.set_entity(entity);
-
-    
 
     serialize::write_message_to_words(&builder)
 }

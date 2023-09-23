@@ -19,9 +19,9 @@ fn main() {
 
     let large_content: [u8; 1000000] = [0; 1000000];
 
-    envelope_capnp_benchmark(&large_content);;
+    envelope_capnp_benchmark(&large_content);
 
-    envelope_json_benchmark(&large_content);;
+    envelope_json_benchmark(&large_content);
 
     println!("done")
 }
