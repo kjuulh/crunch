@@ -46,11 +46,11 @@ Bootstrap the file using `crunch init`, see [crunch cli](crates/crunch-cli) for 
 
 ```toml
 [service]
+service = "users-creation"
+domain = "users"
 codegen = ["rust"]
 
 [[publish]]	
-service = "users-creation"
-domain = "users"
 path = "crates/users-service/crunch"
 
 [[subscription]]
@@ -66,7 +66,7 @@ See [docs](docs/index.md) for more information (TBA)
 
 When crunch is used in services it needs some supportive tooling, it isn't a requirement, but it helps ease development when using them.
 
-- [ ] [Cli](crates/crunch-cli)
+- [ ] [Cli](crates/crunch-cli) Used to generate code, add subscriptions, publish event schema, bump versions and more
 - [ ] [Codegen](crates/crunch-codegen) Can be used to automatically generate rust code depending on your crunch.toml file
 
 ## Extensions
@@ -77,3 +77,24 @@ At its heart crunch is just a opinionated transport protocol, as such additional
 - [ ] [Eventsource](crates/crunch-eventsource) Allows proper eventsourcing for the application, check the readme for more info
 - [ ] [Cuddle](crates/crunch-cuddle) Will read overlapping values from .cuddle.yaml, as such we don't have to define service, domain multiple times, this also allows inheritance for certain fields. 
 
+## Features
+
+Crunch will is configurable to a variety of different transports, persistence layers and more. We recommend a few of them, which crunch automatically ships with (opt out via. `default-features = false` in Cargo.toml)
+
+See the docs for each of them, to see how they can be enabled, and how to setup settings for them. If using `crunch-cuddle`, these settings can be inherited from a `cuddle-component`
+
+We recommend wrapping and exposing the parts you need to the library, so that your services uses a consistent and opinionated layer on top of crunch.
+
+### Transport
+
+You will need a transport of some sort. Transport is what transfers messages between services, crunch is built to be configurable, and unopinionated, as such most messaging protocols should work fine. 
+
+- [ ] [NATS (recommended)](crates/crunch-transport-nats)
+- [ ] [Tokio channel (used for in-memory processing)](crates/crunch-transport-tokio-channel)
+
+### Persistence
+
+Crunch will need a persistence layer, like the other components these can be swapped in
+
+- [ ] [PostgreSQL (recommended)](crates/crunch-postgres)
+- [x] [In memory (used for in-memory processing)](crates/crunch-in-memory)
