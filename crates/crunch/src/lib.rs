@@ -131,6 +131,7 @@ pub mod builder {
                 .clone();
             }
 
+            #[allow(unreachable_code)]
             Self {
                 persistence: None,
                 transport: None,

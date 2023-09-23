@@ -33,7 +33,7 @@ impl crunch_traits::Persistence for InMemoryPersistence {
         let msg = crunch_envelope::proto::wrap(event_info.domain, event_info.entity_type, &content);
         let msg = Msg {
             id: uuid::Uuid::new_v4().to_string(),
-            info: event_info.clone(),
+            info: *event_info,
             msg,
             state: MsgState::Pending,
         };
@@ -61,8 +61,7 @@ impl crunch_traits::Persistence for InMemoryPersistence {
             .read()
             .await
             .get(event_id)
-            .filter(|m| m.state == MsgState::Pending)
-            .map(|m| m.clone())
+            .filter(|m| m.state == MsgState::Pending).cloned()
             .map(|m| (m.info, m.msg)))
     }
 

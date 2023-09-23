@@ -47,9 +47,9 @@ pub fn wrap<'a>(domain: &'a str, entity: &'a str, content: &'a [u8]) -> Vec<u8> 
     metadata.set_domain(domain);
     metadata.set_entity(entity);
 
-    let output = serialize::write_message_to_words(&builder);
+    
 
-    return output;
+    serialize::write_message_to_words(&builder)
 }
 
 #[allow(dead_code)]
@@ -59,7 +59,7 @@ pub struct Metadata {
     entity: String,
 }
 
-pub fn unwrap<'a>(message: &'a [u8]) -> Result<(Vec<u8>, Metadata), EnvelopeError> {
+pub fn unwrap(message: &[u8]) -> Result<(Vec<u8>, Metadata), EnvelopeError> {
     let mut message = message;
     let message_builder =
         serialize::read_message_from_flat_slice(&mut message, ReaderOptions::new())

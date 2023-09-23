@@ -17,7 +17,7 @@ pub fn wrap<'a>(domain: &'a str, entity: &'a str, content: &'a [u8]) -> Vec<u8> 
     out.encode_to_vec()
 }
 
-pub fn unwrap<'a>(message: &'a [u8]) -> Result<(Vec<u8>, Metadata), EnvelopeError> {
+pub fn unwrap(message: &[u8]) -> Result<(Vec<u8>, Metadata), EnvelopeError> {
     let out = Envelope::decode(message).map_err(EnvelopeError::ProtoError)?;
 
     Ok((

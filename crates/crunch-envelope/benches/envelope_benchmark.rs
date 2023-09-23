@@ -1,19 +1,19 @@
 use criterion::{criterion_group, criterion_main, Criterion};
 use crunch_envelope::{unwrap, wrap};
 
-fn envelope_capnp_benchmark(content: &[u8]) -> () {
+fn envelope_capnp_benchmark(content: &[u8]) {
     let out = wrap("some-domain", "some-entity", content);
 
     let _ = unwrap(&out).expect("to be able to unwrap capnp message");
 }
 
-fn envelope_json_benchmark(content: &[u8]) -> () {
+fn envelope_json_benchmark(content: &[u8]) {
     let out = crunch_envelope::json::wrap("some-domain", "some-entity", content);
 
     let _ = crunch_envelope::json::unwrap(&out).expect("to be able to unwrap capnp message");
 }
 
-fn envelope_proto_benchmark(content: &[u8]) -> () {
+fn envelope_proto_benchmark(content: &[u8]) {
     let out = crunch_envelope::proto::wrap("some-domain", "some-entity", content);
 
     let _ = crunch_envelope::proto::unwrap(&out).expect("to be able to unwrap capnp message");

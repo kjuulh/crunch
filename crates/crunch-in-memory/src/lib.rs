@@ -28,7 +28,7 @@ impl InMemoryTransport {
 
         // Possibly create a trait register handle instead, as this requires a write and then read. It may not matter for in memory though
         let mut events = self.events.write().await;
-        if let None = events.get(&transport_key) {
+        if events.get(&transport_key).is_none() {
             let (sender, mut receiver) = tokio::sync::broadcast::channel(100);
             events.insert(transport_key.clone(), sender);
             tokio::spawn(async move {
@@ -64,7 +64,7 @@ impl Transport for InMemoryTransport {
             .expect("transport to be available, as we just created it");
         sender
             .send(TransportEnvelope {
-                info: event_info.clone(),
+                info: *event_info,
                 content,
             })
             .map_err(|e| anyhow::anyhow!(e.to_string()))

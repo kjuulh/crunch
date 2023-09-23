@@ -1,7 +1,7 @@
-use std::{fmt::Display, sync::Arc};
+use std::{fmt::Display};
 
 use async_trait::async_trait;
-use errors::{DeserializeError, PersistenceError, SerializeError, TransportError};
+use errors::{DeserializeError, PersistenceError, SerializeError};
 
 #[async_trait]
 pub trait Persistence {
