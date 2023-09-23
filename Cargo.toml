@@ -7,6 +7,7 @@ crunch = { path = "crates/crunch" }
 crunch-traits = { path = "crates/crunch-traits" }
 crunch-envelope = { path = "crates/crunch-envelope" }
 crunch-in-memory = { path = "crates/crunch-in-memory" }
+crunch-nats = { path = "crates/crunch-nats" }
 
 anyhow = { version = "1.0.71" }
 tokio = { version = "1", features = ["full"] }
@@ -17,3 +18,4 @@ thiserror = {version = "1.0.48"}
 async-trait = "0.1.73"
 uuid = { version = "1.4.1", features = ["v4"]}
 futures = "0.3.28"
+nats = "0.24.0"

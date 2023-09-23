@@ -14,6 +14,15 @@ impl Transport {
             crunch_in_memory::InMemoryTransport::default(),
         ))
     }
+
+    #[cfg(feature = "nats")]
+    pub async fn nats(
+        options: crate::nats::NatsConnectOptions<'_>,
+    ) -> Result<Self, crunch_traits::errors::TransportError> {
+        Ok(Self(std::sync::Arc::new(
+            crunch_nats::NatsTransport::new(options).await?,
+        )))
+    }
 }
 
 impl From<DynTransport> for Transport {

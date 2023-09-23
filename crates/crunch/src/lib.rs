@@ -20,6 +20,11 @@ pub use publisher::Publisher;
 pub use subscriber::Subscriber;
 pub use transport::Transport;
 
+#[cfg(feature = "nats")]
+pub mod nats {
+    pub use crunch_nats::{NatsConnectCredentials, NatsConnectOptions};
+}
+
 #[derive(Clone)]
 pub struct Crunch {
     publisher: Publisher,
@@ -72,6 +77,15 @@ pub mod builder {
         pub fn with_in_memory_transport(&mut self) -> &mut Self {
             self.transport = Some(Transport::in_memory());
             self
+        }
+
+        #[cfg(feature = "nats")]
+        pub async fn with_nats_transport(
+            &mut self,
+            options: crate::nats::NatsConnectOptions<'_>,
+        ) -> Result<&mut Self, crunch_traits::errors::TransportError> {
+            self.transport = Some(Transport::nats(options).await?);
+            Ok(self)
         }
 
         pub fn with_outbox(&mut self, enabled: bool) -> &mut Self {

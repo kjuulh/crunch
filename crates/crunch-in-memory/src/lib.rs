@@ -3,7 +3,7 @@ use std::{collections::BTreeMap, pin::Pin};
 use async_trait::async_trait;
 use crunch_traits::{errors::TransportError, EventInfo, Transport};
 use futures::Stream;
-use tokio::sync::broadcast::{Receiver, Sender};
+use tokio::sync::broadcast::Sender;
 use tokio_stream::{wrappers::BroadcastStream, StreamExt};
 
 #[derive(Clone)]
