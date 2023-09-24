@@ -1,14 +1,15 @@
-pub fn add(left: usize, right: usize) -> usize {
-    left + right
-}
-
 #[cfg(test)]
 mod tests {
-    use super::*;
+    #[tokio::test]
+    async fn test_can_generate_output_rust() {
+        let proto_spec = r#"
+syntax = "proto3";
 
-    #[test]
-    fn it_works() {
-        let result = add(2, 2);
-        assert_eq!(result, 4);
+package test.can.generate.output.rust;
+
+message MyEvent {
+    string name = 1;
+}
+"#;
     }
 }

@@ -7,8 +7,13 @@ edition = "2021"
 
 [dependencies]
 crunch-traits.workspace = true
+crunch-file.workspace = true
 
 anyhow.workspace = true
 tracing.workspace = true
 tokio.workspace = true
 async-trait.workspace = true
+prost.workspace = true
+prost-types.workspace = true
+prost-build.workspace = true
+bytes.workspace = true

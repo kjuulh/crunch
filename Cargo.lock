@@ -551,7 +551,12 @@ version = "0.1.0"
 dependencies = [
  "anyhow",
  "async-trait",
+ "bytes 0.4.12",
+ "crunch-file",
  "crunch-traits",
+ "prost 0.12.1",
+ "prost-build",
+ "prost-types 0.12.1",
  "tokio",
  "tracing",
 ]
@@ -1924,13 +1929,6 @@ dependencies = [
  "redox_syscall",
  "rustix",
  "windows-sys",
-]
-
-[[package]]
-name = "test-bin"
-version = "0.1.0"
-dependencies = [
- "crunch-envelope",
 ]
 
 [[package]]
