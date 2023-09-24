@@ -6,7 +6,7 @@ The value of crunch is that you can separate your own business domain from other
 
 ## Usage
 
-See [examples](crates/crunch/examples/) for a more holistic listing of features
+See [examples](examples/) for a more holistic listing of features
 
 ```rust
 #[tokio::main]
@@ -34,7 +34,7 @@ This will publish `SomeEvent` as a domain event. The API is subject to change, a
 
 ## Workflow
 
-Domain events works off of the principle that your interface is protobuf, as such your service will publish protobuf events, and subscribe to other services if needed.
+Domain events works off of the principle that your interface is `protobuf`, as such your service will publish protobuf events, and subscribe to other services if needed.
 
 To handle this workflow we introduce `crunch.toml` a file to manage these relationships.
 
