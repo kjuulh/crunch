@@ -23,5 +23,9 @@ nats = "0.24.0"
 clap = {version = "4.4.4", features = ["derive"]}
 toml_edit = {version = "0.20.0",features = ["serde"]}
 serde = {version = "1.0.88", features = ["derive"]}
+prost = {version  = "0.12"}
+prost-types = {version = "0.12"}
+bytes = {version = "0.4"}
+
 
 pretty_assertions = "1.4.0"

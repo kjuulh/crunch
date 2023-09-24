@@ -546,6 +546,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "crunch-codegen"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "async-trait",
+ "crunch-traits",
+ "tokio",
+ "tracing",
+]
+
+[[package]]
 name = "crunch-envelope"
 version = "0.1.0"
 dependencies = [

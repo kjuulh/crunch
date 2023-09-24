@@ -10,12 +10,13 @@ name = "envelope_benchmark"
 harness = false
 
 [features]
-default = ["json", "proto"]
+default = ["proto", "capnp"]
 json = ["dep:serde", "dep:serde_json", "dep:base64"]
 proto = ["dep:prost", "dep:prost-types", "dep:bytes"]
+capnp = ["dep:capnp"]
 
 [dependencies]
-capnp = "0.17.2"
+capnp = { version = "0.17.2",optional = true}
 thiserror.workspace = true
 
 # Json
@@ -24,9 +25,9 @@ serde_json = {version = "1.0.107",optional = true}
 base64 = {version = "0.21.4",optional = true}
 
 # Proto
-prost = {version  = "0.12", optional = true}
-prost-types = {version = "0.12", optional = true}
-bytes = {version = "0.4", optional = true}
+prost = {workspace = true, optional = true}
+prost-types = {workspace = true, optional = true}
+bytes = {workspace = true, optional = true}
 
 [build-dependencies]
 capnpc = "0.17.2"
