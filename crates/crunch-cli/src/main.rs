@@ -1,6 +1,6 @@
 mod logging;
 
-use std::path::{PathBuf};
+use std::path::PathBuf;
 
 use anyhow::anyhow;
 use clap::{Args, Parser, Subcommand};

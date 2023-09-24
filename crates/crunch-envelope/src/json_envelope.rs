@@ -16,8 +16,6 @@ pub struct Metadata {
 }
 
 pub fn wrap<'a>(domain: &'a str, entity: &'a str, content: &'a [u8]) -> Vec<u8> {
-    
-
     serde_json::to_vec(&Envelope {
         content: general_purpose::URL_SAFE_NO_PAD.encode(content),
         metadata: Metadata {
