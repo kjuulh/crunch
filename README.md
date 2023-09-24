@@ -66,8 +66,12 @@ See [docs](docs/index.md) for more information (TBA)
 
 When crunch is used in services it needs some supportive tooling, it isn't a requirement, but it helps ease development when using them.
 
-- [ ] [Cli](crates/crunch-cli) Used to generate code, add subscriptions, publish event schema, bump versions and more
-- [ ] [Codegen](crates/crunch-codegen) Can be used to automatically generate rust code depending on your crunch.toml file
+- [x] [Cli](crates/crunch-cli) Used to generate code, add subscriptions, publish event schema, bump versions and more
+  - [x] Codegen done
+  - [ ] Rest
+- [x] [Codegen](crates/crunch-codegen) Can be used to automatically generate rust code depending on your crunch.toml file
+  - [x] Main serialization and protobuf -> rust
+  - [ ] Domain information
 
 ## Extensions
 
