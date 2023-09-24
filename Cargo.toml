@@ -11,7 +11,7 @@ crunch-nats = { path = "crates/crunch-nats" }
 crunch-file = {path = "crates/crunch-file"}
 crunch-codegen = {path = "crates/crunch-codegen"}
 
-anyhow = { version = "1.0.71" }
+anyhow = { version = "1.0.75" }
 tokio = { version = "1", features = ["full"] }
 tokio-stream = {version = "0.1.14"}
 tracing = { version = "0.1", features = ["log"] }
@@ -23,11 +23,11 @@ futures = "0.3.28"
 nats = "0.24.0"
 clap = {version = "4.4.4", features = ["derive"]}
 toml_edit = {version = "0.20.0",features = ["serde"]}
-serde = {version = "1.0.88", features = ["derive"]}
+serde = {version = "1.0.188", features = ["derive"]}
 prost = {version  = "0.12"}
 prost-types = {version = "0.12"}
-prost-build = "0.5"
-bytes = {version = "0.4"}
+prost-build = "0.12"
+bytes = {version = "1.5"}
 tempfile = {version = "3.8.0"}
 genco = {version = "0.17.5"}
 walkdir = {version = "2.4.0"}
