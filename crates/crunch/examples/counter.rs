@@ -37,7 +37,7 @@ impl crunch::traits::Event for SomeEvent {
 async fn main() -> anyhow::Result<()> {
     tracing_subscriber::fmt::init();
 
-    let crunch = crunch::builder::Builder::default().build()?;
+    let crunch = crunch::Builder::default().build()?;
     let counter = std::sync::Arc::new(std::sync::atomic::AtomicUsize::new(0));
 
     let inner_counter = counter.clone();

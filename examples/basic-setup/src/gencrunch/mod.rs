@@ -13,7 +13,7 @@ pub mod basic {
          where
          Self: Sized,
          {
-         let output = Self::decode(raw.as_slice()).map_err(|e| ::crunch::errors::DeserializeError::ProtoErr(e))?;
+         let output = Self::decode(raw.as_slice()).map_err(::crunch::errors::DeserializeError::ProtoErr)?;
          Ok(output)
          }
         }
@@ -42,7 +42,7 @@ pub mod basic {
      where
      Self: Sized,
      {
-     let output = Self::decode(raw.as_slice()).map_err(|e| ::crunch::errors::DeserializeError::ProtoErr(e))?;
+     let output = Self::decode(raw.as_slice()).map_err(::crunch::errors::DeserializeError::ProtoErr)?;
      Ok(output)
      }
     }

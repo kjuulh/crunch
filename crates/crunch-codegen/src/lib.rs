@@ -32,7 +32,7 @@ impl Node {
         let file_name_content = file_name_content.file_stem().unwrap();
         let file_name_content = file_name_content.to_string_lossy().to_lowercase();
 
-        let segments = file_name_content.split(".").collect::<Vec<_>>();
+        let segments = file_name_content.split('.').collect::<Vec<_>>();
         for (i, segment) in segments.iter().enumerate() {
             node = node.children.entry(segment.to_string()).or_insert_with(|| {
                 Node::new(
@@ -214,10 +214,10 @@ impl Codegen {
         let result: anyhow::Result<()> = handle.await?;
         result?;
 
-        let mut output_paths = self.discover_files(&out_tempdir_path, "rs")?;
+        let mut output_paths = self.discover_files(out_tempdir_path, "rs")?;
 
         let mod_path = self
-            .generate_mod_file(&out_tempdir_path, &output_paths)
+            .generate_mod_file(out_tempdir_path, &output_paths)
             .await?;
         output_paths.push(mod_path);
 
