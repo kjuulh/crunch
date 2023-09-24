@@ -1,0 +1,8 @@
+[service]
+service = "my-service"
+domain = "my-domain"
+codegen = ["rust"]
+
+[[publish]]	
+schema-path = "schemas/crunch"
+output-path = "src/crunch"

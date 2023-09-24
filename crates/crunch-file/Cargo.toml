@@ -1,0 +1,18 @@
+[package]
+name = "crunch-file"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+crunch-traits.workspace = true
+
+anyhow.workspace = true
+tokio.workspace = true
+async-trait.workspace = true
+toml_edit.workspace = true
+serde.workspace = true
+
+[dev-dependencies]
+pretty_assertions.workspace = true
