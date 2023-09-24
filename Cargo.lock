@@ -194,6 +194,7 @@ version = "0.1.0"
 dependencies = [
  "anyhow",
  "crunch",
+ "prost 0.12.1",
  "tokio",
  "tracing",
  "tracing-subscriber",
@@ -560,6 +561,7 @@ dependencies = [
  "prost 0.12.1",
  "prost-build",
  "prost-types 0.12.1",
+ "regex",
  "tempfile",
  "tokio",
  "tracing",

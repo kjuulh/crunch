@@ -1,7 +1,10 @@
 syntax = "proto3";
 
-package test.can.generate.output.rust;
+import "includes/my_include.proto";
+
+package basic.my_event;
 
 message MyEvent {
     string name = 1;
+    basic.includes.my_include.MyInclude include = 2;
 }

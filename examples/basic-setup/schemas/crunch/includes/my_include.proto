@@ -1,0 +1,7 @@
+syntax = "proto3";
+
+package basic.includes.my_include;
+
+message MyInclude {
+    string name = 1;
+}

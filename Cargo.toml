@@ -31,6 +31,6 @@ bytes = {version = "0.4"}
 tempfile = {version = "3.8.0"}
 genco = {version = "0.17.5"}
 walkdir = {version = "2.4.0"}
-
+regex = {version = "1.9.5"}
 
 pretty_assertions = "1.4.0"

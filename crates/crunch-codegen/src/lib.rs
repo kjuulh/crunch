@@ -1,8 +1,124 @@
 use anyhow::anyhow;
 use genco::prelude::*;
-use std::path::{Path, PathBuf};
+use regex::Regex;
+use std::{
+    collections::HashMap,
+    path::{Path, PathBuf},
+};
 use tokio::io::AsyncWriteExt;
 use walkdir::WalkDir;
+
+#[derive(Debug)]
+struct Node {
+    file: Option<String>,
+    messages: Option<Vec<String>>,
+    segment: String,
+    children: HashMap<String, Node>,
+}
+
+impl Node {
+    fn new(segment: String, file: Option<String>, messages: Option<Vec<String>>) -> Self {
+        Node {
+            file,
+            messages,
+            segment,
+            children: HashMap::new(),
+        }
+    }
+
+    fn insert(&mut self, file_name: &str, messages: Vec<String>) {
+        let mut node = self;
+        let file_name_content = PathBuf::from(file_name);
+        let file_name_content = file_name_content.file_stem().unwrap();
+        let file_name_content = file_name_content.to_string_lossy().to_lowercase();
+
+        let segments = file_name_content.split(".").collect::<Vec<_>>();
+        for (i, segment) in segments.iter().enumerate() {
+            node = node.children.entry(segment.to_string()).or_insert_with(|| {
+                Node::new(
+                    segment.to_string(),
+                    if i + 1 == segments.len() {
+                        Some(file_name.into())
+                    } else {
+                        None
+                    },
+                    if i + 1 == segments.len() {
+                        Some(messages.clone())
+                    } else {
+                        None
+                    },
+                )
+            });
+        }
+    }
+
+    fn traverse(&self) -> genco::lang::rust::Tokens {
+        for (_, node) in self.children.iter() {
+            return node.traverse_indent(0);
+        }
+
+        self.traverse_indent(0)
+    }
+
+    fn traverse_indent(&self, indent: usize) -> genco::lang::rust::Tokens {
+        let padding = " ".repeat(indent * 4);
+
+        let mut message_tokens = Vec::new();
+
+        if let Some(file) = &self.file {
+            if let Some(messages) = &self.messages {
+                for message in messages.iter() {
+                    let tokens: genco::lang::rust::Tokens = quote! {
+                    $['\r']$(&padding)impl ::crunch::Serializer for $(message) {
+                    $['\r']$(&padding)    fn serialize(&self) -> Result<Vec<u8>, ::crunch::errors::SerializeError> {
+                    $['\r']$(&padding)        todo!()
+                    $['\r']$(&padding)    }
+                    $['\r']$(&padding)}
+                    $['\r']$(&padding)impl ::crunch::Deserializer for $(message) {
+                    $['\r']$(&padding)    fn deserialize(_raw: Vec<u8>) -> Result<Self, ::crunch::errors::DeserializeError>
+                    $['\r']$(&padding)    where
+                    $['\r']$(&padding)        Self: Sized,
+                    $['\r']$(&padding)    {
+                    $['\r']$(&padding)        todo!()
+                    $['\r']$(&padding)    }
+                    $['\r']$(&padding)}
+                    $['\r']$(&padding)
+                    $['\r']$(&padding)impl Event for $(message) {
+                    $['\r']$(&padding)    fn event_info() -> ::crunch::traits::EventInfo {
+                    $['\r']$(&padding)        EventInfo {
+                    $['\r']$(&padding)            domain: "my-domain",
+                    $['\r']$(&padding)            entity_type: "my-entity-type",
+                    $['\r']$(&padding)            event_name: "my-event-name",
+                    $['\r']$(&padding)        }
+                    $['\r']$(&padding)    }
+                    $['\r']$(&padding)}
+                    };
+
+                    message_tokens.push(tokens);
+                }
+            }
+
+            quote! {
+                $['\r']$(&padding)pub mod $(&self.segment) {
+                    $['\r']$(&padding)include!($(quoted(file)));
+                    $['\r']$(&padding)$(for tokens in message_tokens join ($['\r']) => $tokens)
+                $['\r']$(&padding)}
+            }
+        } else {
+            let mut child_tokens = Vec::new();
+            for (_children, nodes) in &self.children {
+                let tokens = nodes.traverse_indent(indent + 1);
+                child_tokens.push(tokens);
+            }
+
+            quote! {
+                $['\r']$(&padding)pub mod $(&self.segment) {
+                    $(&padding)$(for tokens in child_tokens join ($['\r']) => $tokens)
+                $['\r']$(&padding)}
+            }
+        }
+    }
+}
 
 pub struct Codegen {}
 
@@ -12,6 +128,10 @@ impl Codegen {
     }
 
     pub async fn generate_rust(&self, input_path: &Path, output_path: &Path) -> anyhow::Result<()> {
+        if output_path.exists() {
+            tokio::fs::remove_dir_all(output_path).await?;
+        }
+
         let input_protos = self.discover_files(input_path, "proto")?;
         let (input_proto_paths, input_dir) = self.copy_protos(input_protos, input_path).await?;
         let (output_proto_paths, temp_output_dir) = self
@@ -110,30 +230,26 @@ impl Codegen {
     ) -> anyhow::Result<PathBuf> {
         let mod_path = output_tempdir_path.join("mod.rs");
         let mut mod_file = tokio::fs::File::create(&mod_path).await?;
+        let mut node = Node::new("root".into(), None, None);
 
-        let mut includes: Vec<genco::lang::rust::Tokens> = Vec::new();
+        let regex = Regex::new(r"pub struct (?P<eventName>[a-zA-Z0-9-_]+)")
+            .expect("regex to be well formed");
+
         for generated_file in output_paths {
             if let Some(name) = generated_file.file_name() {
-                let mod_name = generated_file
-                    .file_stem()
-                    .unwrap()
-                    .to_ascii_lowercase()
-                    .to_string_lossy()
-                    .replace(".", "_")
-                    .replace("-", "_");
-
                 let file_name = name.to_str().unwrap();
+                let file = tokio::fs::read_to_string(generated_file).await?;
+                let messages = regex
+                    .captures_iter(&file)
+                    .map(|m| m.name("eventName").unwrap())
+                    .map(|m| m.as_str().to_string())
+                    .collect();
 
-                includes.push(genco::quote! {
-                    pub mod $(mod_name) {
-                        include!($(quoted(file_name)));
-                    }
-                });
+                node.insert(file_name, messages);
             }
         }
-
         let mod_tokens: genco::lang::rust::Tokens = genco::quote! {
-            $(for tokens in includes join($['\n']) => $tokens)
+            $(node.traverse())
         };
         let mod_contents = mod_tokens.to_file_string()?;
         mod_file.write_all(mod_contents.as_bytes()).await?;
@@ -178,109 +294,22 @@ impl Default for Codegen {
 
 #[cfg(test)]
 mod tests {
-    use genco::prelude::*;
-    use tokio::io::AsyncWriteExt;
+    use super::*;
+    #[test]
+    fn test_node() {
+        let mut root = Node::new("root".into(), None, None);
 
-    #[tokio::test]
-    async fn test_can_generate_output_rust() -> anyhow::Result<()> {
-        // Generate from protobuf
-        let proto_spec = r#"
-syntax = "proto3";
+        root.insert("basic.my_event.rs", vec!["One".into(), "Two".into()]);
+        root.insert("basic.includes.includes.rs", vec!["Three".into()]);
+        root.insert("basic.includes.includes-two.rs", Vec::new());
 
-import "includes/test_include.proto";
+        let res = root
+            .traverse()
+            .to_file_string()
+            .expect("to generate rust code");
 
-package test.can.generate.output.rust;
+        pretty_assertions::assert_eq!(res, r#""#);
 
-message MyEvent {
-    string name = 1;
-}
-"#;
-
-        let proto_include_spec = r#"
-syntax = "proto3";
-
-package test.can.generate.output.rust.include.test_include;
-
-message MyInclude {
-    string name = 1;
-}
-"#;
-
-        let out_tempdir = tempfile::TempDir::new()?;
-        let in_tempdir = tempfile::TempDir::new()?;
-
-        let proto_path = in_tempdir.path().join("test.proto");
-        let mut proto_file = tokio::fs::File::create(&proto_path).await?;
-        proto_file.write_all(proto_spec.as_bytes()).await?;
-        proto_file.sync_all().await?;
-
-        tokio::fs::create_dir_all(in_tempdir.path().join("includes")).await?;
-        let proto_include_path = in_tempdir.path().join("includes/test_include.proto");
-        let mut proto_file = tokio::fs::File::create(&proto_include_path).await?;
-        proto_file.write_all(proto_include_spec.as_bytes()).await?;
-        proto_file.sync_all().await?;
-
-        let out_tempdir_path = out_tempdir.into_path();
-        let handle = tokio::task::spawn_blocking({
-            let out_tempdir_path = out_tempdir_path.clone();
-            move || {
-                prost_build::Config::new()
-                    .out_dir(out_tempdir_path)
-                    .compile_protos(&[proto_path, proto_include_path], &[in_tempdir.into_path()])?;
-
-                Ok(())
-            }
-        });
-
-        let result: anyhow::Result<()> = handle.await?;
-        result?;
-
-        let mut entries = tokio::fs::read_dir(&out_tempdir_path).await?;
-        let mut file_paths = Vec::new();
-        while let Some(entry) = entries.next_entry().await? {
-            if let Some(ext) = entry.path().extension().and_then(|e| e.to_str()) {
-                if ext == "rs" {
-                    file_paths.push(entry.path());
-                }
-            }
-        }
-
-        // Generate mod.rs
-        let mod_path = out_tempdir_path.join("mod.rs");
-        let mut mod_file = tokio::fs::File::create(&mod_path).await?;
-
-        let mut includes: Vec<genco::lang::rust::Tokens> = Vec::new();
-        for generated_file in &file_paths {
-            if let Some(name) = generated_file.file_name() {
-                let mod_name = generated_file
-                    .file_stem()
-                    .unwrap()
-                    .to_ascii_lowercase()
-                    .to_string_lossy()
-                    .replace(".", "_")
-                    .replace("-", "_");
-
-                let file_name = name.to_str().unwrap();
-
-                includes.push(genco::quote! {
-                    pub mod $(mod_name) {
-                        include!($(quoted(file_name)));
-                    }
-                });
-            }
-        }
-
-        let mod_tokens: genco::lang::rust::Tokens = genco::quote! {
-            $(for tokens in includes join($['\n']) => $tokens)
-        };
-        let mod_contents = mod_tokens.to_file_string()?;
-
-        pretty_assertions::assert_eq!("", mod_contents);
-
-        mod_file.write_all(mod_contents.as_bytes()).await?;
-
-        assert_eq!(1, file_paths.len());
-
-        Ok(())
+        panic!();
     }
 }

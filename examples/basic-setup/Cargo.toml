@@ -12,3 +12,4 @@ tracing.workspace = true
 tokio.workspace = true
 tracing-subscriber.workspace = true
 anyhow.workspace = true
+prost.workspace = true
