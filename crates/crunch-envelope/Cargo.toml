@@ -10,7 +10,7 @@ name = "envelope_benchmark"
 harness = false
 
 [features]
-default = ["proto", "capnp"]
+default = ["proto"]
 json = ["dep:serde", "dep:serde_json", "dep:base64"]
 proto = ["dep:prost", "dep:prost-types", "dep:bytes"]
 capnp = ["dep:capnp"]

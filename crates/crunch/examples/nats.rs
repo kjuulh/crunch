@@ -39,7 +39,7 @@ async fn main() -> anyhow::Result<()> {
     tracing_subscriber::fmt::init();
 
     // Remember to start nats via. docker first, or set equivalent settings as in `NatsConnectOptions`
-    let crunch = crunch::builder::Builder::default()
+    let crunch = crunch::Builder::default()
         .with_nats_transport(NatsConnectOptions {
             host: "127.0.0.1:4222",
             credentials: NatsConnectCredentials::UserPass {
