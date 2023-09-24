@@ -7,6 +7,7 @@ edition = "2021"
 
 [dependencies]
 crunch-file.workspace = true
+crunch-codegen.workspace = true
 
 anyhow.workspace = true
 tracing.workspace = true

@@ -1,0 +1,7 @@
+syntax = "proto3";
+
+package test.can.generate.output.rust;
+
+message MyEvent {
+    string name = 1;
+}

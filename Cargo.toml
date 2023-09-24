@@ -9,6 +9,7 @@ crunch-envelope = { path = "crates/crunch-envelope" }
 crunch-in-memory = { path = "crates/crunch-in-memory" }
 crunch-nats = { path = "crates/crunch-nats" }
 crunch-file = {path = "crates/crunch-file"}
+crunch-codegen = {path = "crates/crunch-codegen"}
 
 anyhow = { version = "1.0.71" }
 tokio = { version = "1", features = ["full"] }
@@ -27,6 +28,9 @@ prost = {version  = "0.12"}
 prost-types = {version = "0.12"}
 prost-build = "0.5"
 bytes = {version = "0.4"}
+tempfile = {version = "3.8.0"}
+genco = {version = "0.17.5"}
+walkdir = {version = "2.4.0"}
 
 
 pretty_assertions = "1.4.0"

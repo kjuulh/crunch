@@ -1,11 +1,10 @@
 mod logging;
 
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 
 use anyhow::anyhow;
-use clap::{Args, Parser, Subcommand, ValueEnum};
+use clap::{Args, Parser, Subcommand};
 use logging::LogArg;
-use tracing::Level;
 
 #[derive(Parser, Clone)]
 #[command(author, version, about, long_about = None, subcommand_required = true)]
@@ -43,13 +42,30 @@ async fn main() -> anyhow::Result<()> {
 
     match &cli.commands {
         Commands::Generate {} => {
-            let config_file = config::get_file(&cli.global_args.crunch_file)
+            let config = config::get_file(&cli.global_args.crunch_file)
                 .await
                 .map_err(|e| anyhow!("failed to load config: {}", e))?
                 .get_config()
                 .map_err(|e| anyhow!("invalid config: {}", e))?;
 
-            tracing::info!("generating crunch code")
+            tracing::info!("generating crunch code");
+            let codegen = crunch_codegen::Codegen::new();
+
+            if let Some(publish) = config.publish {
+                for p in &publish {
+                    let mut rel_schema_path = PathBuf::from(&p.schema_path);
+                    let mut rel_output_path = PathBuf::from(&p.output_path);
+
+                    if let Some(dir_path) = cli.global_args.crunch_file.parent() {
+                        rel_schema_path = dir_path.join(rel_schema_path);
+                        rel_output_path = dir_path.join(rel_output_path);
+                    }
+
+                    codegen
+                        .generate_rust(&rel_schema_path, &rel_output_path)
+                        .await?;
+                }
+            }
         }
     }
 
