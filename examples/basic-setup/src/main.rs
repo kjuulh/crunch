@@ -4,7 +4,7 @@ use gencrunch::basic::{includes::my_include::MyInclude, my_event::MyEvent};
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
-    let crunch = ::crunch::builder::Builder::default().build()?;
+    let crunch = crunch::Builder::default().build()?;
 
     crunch
         .subscribe(|item: MyEvent| async move {

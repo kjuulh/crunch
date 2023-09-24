@@ -9,22 +9,18 @@ The value of crunch is that you can separate your own business domain from other
 See [examples](crates/crunch/examples/) for a more holistic listing of features
 
 ```rust
-impl Event for SomeEvent {
-    fn event_info(&self) -> EventInfo {
-        EventInfo {
-            domain: "some-domain",
-            entity_type: "some-entity",
-        }
-    }
-}
-
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
-    let in_memory = Persistence::in_memory();
-    OutboxHandler::new(in_memory.clone()).spawn();
-    let publisher = Publisher::new(in_memory);
+    let crunch = crunch::Builder::default().build()?;
 
-    publisher
+    crunch.subscribe(|event| async move {
+        println!("received event: {:?}", event);
+
+        Ok(())
+    })
+    .await?;
+
+    crunch
         .publish(SomeEvent {
             name: "some-name".into(),
         })
@@ -67,7 +63,7 @@ See [docs](docs/index.md) for more information (TBA)
 When crunch is used in services it needs some supportive tooling, it isn't a requirement, but it helps ease development when using them.
 
 - [x] [Cli](crates/crunch-cli) Used to generate code, add subscriptions, publish event schema, bump versions and more
-  - [x] Codegen done
+  - [x] Codegen done (at least for an alpha)
   - [ ] Rest
 - [x] [Codegen](crates/crunch-codegen) Can be used to automatically generate rust code depending on your crunch.toml file
   - [x] Main serialization and protobuf -> rust

@@ -56,7 +56,8 @@ impl std::ops::Deref for Crunch {
     }
 }
 
-pub mod builder {
+pub use builder::*;
+mod builder {
     use crate::{errors, Crunch, OutboxHandler, Persistence, Publisher, Subscriber, Transport};
 
     #[derive(Clone)]
