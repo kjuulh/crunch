@@ -64,6 +64,8 @@ async fn main() -> anyhow::Result<()> {
                     codegen
                         .generate_rust(&rel_schema_path, &rel_output_path)
                         .await?;
+
+                    println!("success: generated crunch {}", &rel_output_path.display());
                 }
             }
         }

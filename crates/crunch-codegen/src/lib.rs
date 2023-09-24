@@ -14,11 +14,11 @@ impl Codegen {
     pub async fn generate_rust(&self, input_path: &Path, output_path: &Path) -> anyhow::Result<()> {
         let input_protos = self.discover_files(input_path, "proto")?;
         let (input_proto_paths, input_dir) = self.copy_protos(input_protos, input_path).await?;
-        let (output_proto_paths, output_dir) = self
-            .generate_rust_from_proto(input_proto_paths, output_path, input_dir.path())
+        let (output_proto_paths, temp_output_dir) = self
+            .generate_rust_from_proto(input_proto_paths, input_dir.path())
             .await?;
 
-        self.copy_rs(output_proto_paths, output_path, output_dir.path())
+        self.copy_rs(output_proto_paths, output_path, temp_output_dir.path())
             .await?;
 
         Ok(())
@@ -29,13 +29,15 @@ impl Codegen {
         for entry in WalkDir::new(input_path) {
             let entry = entry?;
 
-            if let Some(extension) = entry.path().extension().and_then(|e| e.to_str()) {
-                proto_files.push(entry.into_path());
+            if let Some(ext) = entry.path().extension().and_then(|e| e.to_str()) {
+                if ext == extension {
+                    proto_files.push(entry.into_path());
+                }
             }
         }
 
         if proto_files.is_empty() {
-            anyhow::anyhow!(
+            anyhow::bail!(
                 "failed to find any protobuf files in: {}",
                 input_path.display()
             );
@@ -72,7 +74,6 @@ impl Codegen {
     async fn generate_rust_from_proto(
         &self,
         input_proto_paths: Vec<PathBuf>,
-        output_path: &Path,
         in_root_path: &Path,
     ) -> anyhow::Result<(Vec<PathBuf>, tempfile::TempDir)> {
         let out_tempdir = tempfile::TempDir::new()?;
@@ -149,9 +150,10 @@ impl Codegen {
         for output_rs in &output_proto_paths {
             let rel_proto_path = output_rs.strip_prefix(root_path).map_err(|e| {
                 anyhow!(
-                    "output: {} does not match root_path: {}",
+                    "output: {} does not match root_path: {}, error: {}",
                     output_rs.display(),
-                    root_path.display()
+                    root_path.display(),
+                    e
                 )
             })?;
             let in_proto_path = output_path.join(rel_proto_path);
