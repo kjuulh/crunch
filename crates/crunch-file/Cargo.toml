@@ -13,6 +13,7 @@ tokio.workspace = true
 async-trait.workspace = true
 toml_edit.workspace = true
 serde.workspace = true
+tracing.workspace = true
 
 [dev-dependencies]
 pretty_assertions.workspace = true

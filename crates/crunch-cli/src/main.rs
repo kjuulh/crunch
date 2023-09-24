@@ -1,4 +1,10 @@
+mod logging;
+
+use std::path::PathBuf;
+
+use anyhow::anyhow;
 use clap::{Args, Parser, Subcommand, ValueEnum};
+use logging::LogArg;
 use tracing::Level;
 
 #[derive(Parser, Clone)]
@@ -27,52 +33,33 @@ struct GlobalArgs {
         global = true,
         help_heading = "Global"
     )]
-    crunch_file: String,
-}
-
-#[derive(Clone, ValueEnum)]
-enum LogArg {
-    None,
-    Trace,
-    Debug,
-    Info,
-    Warn,
-    Error,
+    crunch_file: PathBuf,
 }
 
 #[tokio::main]
-async fn main() {
+async fn main() -> anyhow::Result<()> {
     let cli = Cli::parse();
-    init_logging(&cli.global_args.log);
+    cli.global_args.log.init_logging();
 
     match &cli.commands {
-        Commands::Generate {} => {}
+        Commands::Generate {} => {
+            let config_file = config::get_file(&cli.global_args.crunch_file)
+                .await
+                .map_err(|e| anyhow!("failed to load config: {}", e))?
+                .get_config()
+                .map_err(|e| anyhow!("invalid config: {}", e))?;
+
+            tracing::info!("generating crunch code")
+        }
     }
+
+    Ok(())
 }
 
-fn init_logging(log: &LogArg) {
-    match log {
-        LogArg::None => {}
-        LogArg::Trace => {
-            tracing_subscriber::fmt()
-                .with_max_level(Level::TRACE)
-                .init();
-        }
-        LogArg::Debug => {
-            tracing_subscriber::fmt()
-                .with_max_level(Level::DEBUG)
-                .init();
-        }
-        LogArg::Info => {
-            tracing_subscriber::fmt().with_max_level(Level::INFO).init();
-        }
-        LogArg::Warn => {
-            tracing_subscriber::fmt().with_max_level(Level::WARN).init();
-        }
-        LogArg::Error => {
-            tracing_subscriber::fmt()
-                .with_max_level(Level::ERROR)
-                .init();
-        }
+mod config {
+    pub async fn get_file(path: &std::path::Path) -> anyhow::Result<crunch_file::File> {
+        let file = crunch_file::File::parse_file(path).await?;
+
+        Ok(file)
     }
 }

@@ -31,12 +31,15 @@ pub struct Publish {
 #[allow(dead_code)]
 impl File {
     pub async fn parse_file(path: &std::path::Path) -> anyhow::Result<File> {
+        tracing::debug!("loading crunch file at: {}", path.display());
+
         let file = tokio::fs::read_to_string(path).await?;
 
         Self::parse(&file).await
     }
 
     pub async fn parse(content: &str) -> anyhow::Result<File> {
+        tracing::debug!("parsing crunch file");
         let config: Document = content.parse::<Document>()?;
 
         Ok(File { doc: config })
@@ -44,6 +47,8 @@ impl File {
 
     pub async fn write_file(&self, path: &std::path::Path) -> anyhow::Result<()> {
         let content = self.write().await?;
+
+        tracing::debug!("writing to file: {}", path.display());
         let mut file = tokio::fs::File::create(path).await?;
 
         file.write_all(content.as_bytes()).await?;
@@ -53,6 +58,8 @@ impl File {
     }
 
     pub async fn write(&self) -> anyhow::Result<String> {
+        tracing::debug!("converting crunch config into file");
+
         let content = self.doc.to_string();
 
         Ok(content)
@@ -64,9 +71,11 @@ impl File {
         publish["output-path"] = value(output_path);
 
         if !self.doc.contains_key("publish") {
+            tracing::debug!("publish key not existing, adding new");
             self.doc["publish"] = toml_edit::array()
         }
 
+        tracing::debug!("adding new publish item");
         self.doc["publish"]
             .as_array_of_tables_mut()
             .expect("publish to be present and be array of tables [[publish]]")
@@ -78,6 +87,7 @@ impl File {
     pub fn get_config(&self) -> anyhow::Result<Config> {
         let content = self.doc.to_string();
 
+        tracing::debug!("converting config into read only copy");
         let config: Config = toml_edit::de::from_str(&content)?;
 
         Ok(config)

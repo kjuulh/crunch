@@ -8,6 +8,7 @@ crunch-traits = { path = "crates/crunch-traits" }
 crunch-envelope = { path = "crates/crunch-envelope" }
 crunch-in-memory = { path = "crates/crunch-in-memory" }
 crunch-nats = { path = "crates/crunch-nats" }
+crunch-file = {path = "crates/crunch-file"}
 
 anyhow = { version = "1.0.71" }
 tokio = { version = "1", features = ["full"] }

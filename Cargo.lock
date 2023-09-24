@@ -538,6 +538,7 @@ dependencies = [
  "anyhow",
  "async-trait",
  "clap 4.4.4",
+ "crunch-file",
  "thiserror",
  "tokio",
  "tracing",
@@ -572,6 +573,7 @@ dependencies = [
  "serde",
  "tokio",
  "toml_edit",
+ "tracing",
 ]
 
 [[package]]
