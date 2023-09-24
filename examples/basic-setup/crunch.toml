@@ -5,4 +5,4 @@ codegen = ["rust"]
 
 [[publish]]	
 schema-path = "schemas/crunch"
-output-path = "src/crunch"
+output-path = "src/gencrunch"

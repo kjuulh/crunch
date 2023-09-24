@@ -1,4 +1,4 @@
-use crunch_traits::{Event};
+use crunch_traits::Event;
 use futures::StreamExt;
 
 use crate::{errors, Transport};

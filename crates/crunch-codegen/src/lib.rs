@@ -64,28 +64,28 @@ impl Node {
         let padding = " ".repeat(indent * 4);
 
         let mut message_tokens = Vec::new();
-
         if let Some(file) = &self.file {
             if let Some(messages) = &self.messages {
                 for message in messages.iter() {
                     let tokens: genco::lang::rust::Tokens = quote! {
-                    $['\r']$(&padding)impl ::crunch::Serializer for $(message) {
+                    $['\r']$(&padding)impl ::crunch::traits::Serializer for $(message) {
                     $['\r']$(&padding)    fn serialize(&self) -> Result<Vec<u8>, ::crunch::errors::SerializeError> {
-                    $['\r']$(&padding)        todo!()
+                    $['\r']$(&padding)        Ok(self.encode_to_vec())
                     $['\r']$(&padding)    }
                     $['\r']$(&padding)}
-                    $['\r']$(&padding)impl ::crunch::Deserializer for $(message) {
-                    $['\r']$(&padding)    fn deserialize(_raw: Vec<u8>) -> Result<Self, ::crunch::errors::DeserializeError>
+                    $['\r']$(&padding)impl ::crunch::traits::Deserializer for $(message) {
+                    $['\r']$(&padding)    fn deserialize(raw: Vec<u8>) -> Result<Self, ::crunch::errors::DeserializeError>
                     $['\r']$(&padding)    where
                     $['\r']$(&padding)        Self: Sized,
                     $['\r']$(&padding)    {
-                    $['\r']$(&padding)        todo!()
+                    $['\r']$(&padding)        let output  = Self::decode(raw.as_slice()).map_err(|e| ::crunch::errors::DeserializeError::ProtoErr(e))?;
+                    $['\r']$(&padding)        Ok(output)
                     $['\r']$(&padding)    }
                     $['\r']$(&padding)}
                     $['\r']$(&padding)
-                    $['\r']$(&padding)impl Event for $(message) {
+                    $['\r']$(&padding)impl crunch::traits::Event for $(message) {
                     $['\r']$(&padding)    fn event_info() -> ::crunch::traits::EventInfo {
-                    $['\r']$(&padding)        EventInfo {
+                    $['\r']$(&padding)        ::crunch::traits::EventInfo {
                     $['\r']$(&padding)            domain: "my-domain",
                     $['\r']$(&padding)            entity_type: "my-entity-type",
                     $['\r']$(&padding)            event_name: "my-event-name",
@@ -100,6 +100,7 @@ impl Node {
 
             quote! {
                 $['\r']$(&padding)pub mod $(&self.segment) {
+                    use prost::Message;
                     $['\r']$(&padding)include!($(quoted(file)));
                     $['\r']$(&padding)$(for tokens in message_tokens join ($['\r']) => $tokens)
                 $['\r']$(&padding)}

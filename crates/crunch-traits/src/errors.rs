@@ -8,8 +8,10 @@ pub enum SerializeError {
 
 #[derive(Error, Debug)]
 pub enum DeserializeError {
-    #[error("failed to serialize {0}")]
+    #[error("failed to deserialize {0}")]
     FailedToDeserialize(anyhow::Error),
+    #[error("failed to deserialize {0}")]
+    ProtoErr(prost::DecodeError),
 }
 
 #[derive(Error, Debug)]

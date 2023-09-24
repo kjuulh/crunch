@@ -56,13 +56,17 @@ impl crunch_traits::Persistence for InMemoryPersistence {
     }
 
     async fn get(&self, event_id: &str) -> Result<Option<(EventInfo, Vec<u8>)>, PersistenceError> {
-        Ok(self
-            .store
-            .read()
-            .await
-            .get(event_id)
-            .filter(|m| m.state == MsgState::Pending).cloned()
-            .map(|m| (m.info, m.msg)))
+        let store = self.store.read().await;
+
+        let event = match store.get(event_id).filter(|m| m.state == MsgState::Pending) {
+            Some(event) => event,
+            None => return Ok(None),
+        };
+
+        let (content, _) = crunch_envelope::proto::unwrap(event.msg.as_slice())
+            .map_err(|e| PersistenceError::GetErr(anyhow::anyhow!(e)))?;
+
+        Ok(Some((event.info, content)))
     }
 
     async fn update_published(&self, event_id: &str) -> Result<(), PersistenceError> {

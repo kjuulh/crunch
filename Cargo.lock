@@ -635,6 +635,7 @@ dependencies = [
  "anyhow",
  "async-trait",
  "futures",
+ "prost 0.12.1",
  "thiserror",
  "tokio",
  "uuid",
