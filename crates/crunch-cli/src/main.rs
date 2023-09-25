@@ -4,7 +4,10 @@ use std::path::PathBuf;
 
 use anyhow::anyhow;
 use clap::{Args, Parser, Subcommand};
+use inquire::validator::Validation;
 use logging::LogArg;
+use regex::Regex;
+use tokio::io::AsyncWriteExt;
 
 #[derive(Parser, Clone)]
 #[command(author, version, about, long_about = None, subcommand_required = true)]
@@ -19,6 +22,7 @@ struct Cli {
 #[derive(Subcommand, Clone)]
 enum Commands {
     Generate {},
+    Init {},
 }
 
 #[derive(Args, Clone)]
@@ -68,6 +72,72 @@ async fn main() -> anyhow::Result<()> {
                     println!("success: generated crunch {}", &rel_output_path.display());
                 }
             }
+        }
+        Commands::Init {} => {
+            match config::get_file(&cli.global_args.crunch_file).await {
+                Ok(_) => anyhow::bail!("config file already exists"),
+                Err(_) => {}
+            }
+
+            let path = &cli.global_args.crunch_file;
+            let file_name = path
+                .file_name()
+                .ok_or(anyhow::anyhow!("not a valid file name"))?;
+            if file_name != ".crunch.toml" {
+                anyhow::bail!("--crunch-file always has to end with file: .crunch.toml");
+            }
+            if let Some(dir) = path.parent() {
+                if !dir.exists() {
+                    tokio::fs::create_dir_all(dir).await?;
+                }
+            }
+
+            fn validate_text(
+                text: &str,
+            ) -> Result<Validation, Box<dyn std::error::Error + Send + Sync + 'static>>
+            {
+                let regex = Regex::new("^[a-z0-9-_]+$").expect("is required to be valid regex");
+                if regex.is_match(text) {
+                    Ok(Validation::Valid)
+                } else {
+                    Ok(Validation::Invalid(
+                        "a service name can only contain lowercase letter, numbers, - and _".into(),
+                    ))
+                }
+            }
+
+            let service = inquire::Text::new("service")
+                .with_help_message("please insert your service name")
+                .with_validator(validate_text)
+                .prompt()?;
+            let domain = inquire::Text::new("domain")
+                .with_help_message("please insert your domain")
+                .with_validator(validate_text)
+                .prompt()?;
+            let codegen = inquire::MultiSelect::new("codegen", vec!["rust", "go"])
+                .with_help_message("which types of client code should be generated for you?")
+                .prompt()?;
+
+            let mut crunch_file = tokio::fs::File::create(path).await?;
+            crunch_file
+                .write_all(
+                    format!(
+                        r#"[service]
+service = "{service}"
+domain = "{domain}"
+codegen = [{}]
+"#,
+                        codegen
+                            .iter()
+                            .map(|c| format!(r#""{c}""#))
+                            .collect::<Vec<_>>()
+                            .join(", ")
+                    )
+                    .as_bytes(),
+                )
+                .await?;
+
+            println!("Success! generated file at: {}", path.display());
         }
     }
 

@@ -5,6 +5,10 @@ edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
+[[bin]]
+name = "crunch"
+path = "src/main.rs"
+
 [dependencies]
 crunch-file.workspace = true
 crunch-codegen.workspace = true
@@ -16,3 +20,5 @@ thiserror.workspace = true
 async-trait.workspace = true
 tracing-subscriber.workspace = true
 clap.workspace = true
+inquire.workspace = true
+regex.workspace = true
