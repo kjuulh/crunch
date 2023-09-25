@@ -22,7 +22,15 @@ struct Cli {
 #[derive(Subcommand, Clone)]
 enum Commands {
     Generate {},
-    Init {},
+    Init {
+        #[command(subcommand)]
+        commands: Option<InitCommands>,
+    },
+}
+
+#[derive(Subcommand, Clone)]
+enum InitCommands {
+    Publish {},
 }
 
 #[derive(Args, Clone)]
@@ -73,7 +81,60 @@ async fn main() -> anyhow::Result<()> {
                 }
             }
         }
-        Commands::Init {} => {
+        Commands::Init {
+            commands: Some(commands),
+        } => match commands {
+            InitCommands::Publish {} => {
+                match config::get_file(&cli.global_args.crunch_file).await {
+                    Err(_) => {
+                        anyhow::bail!(
+                            "config file not found: {}",
+                            &cli.global_args
+                                .crunch_file
+                                .canonicalize()
+                                .unwrap_or(cli.global_args.crunch_file)
+                                .display()
+                        )
+                    }
+                    Ok(mut config) => {
+                        let schema_path = inquire::Text::new("schema_path")
+                            .with_help_message(
+                                "please select where you want your schema files to be placed",
+                            )
+                            .with_default("schemas/crunch")
+                            .prompt()?;
+                        let output_path = inquire::Text::new("output_path")
+                            .with_help_message(
+                                "please select where you want your generated files to be placed",
+                            )
+                            .with_default("src/gencrunch")
+                            .prompt()?;
+
+                        let config = config.add_publish(&schema_path, &output_path);
+                        config.write_file(&cli.global_args.crunch_file).await?;
+
+                        // TODO: add example schema
+
+                        let output_path = if let Some(dir) = &cli.global_args.crunch_file.parent() {
+                            if dir.display().to_string() == "" {
+                                format!("{schema_path}")
+                            } else {
+                                format!(
+                                    "{}/{}",
+                                    dir.display().to_string().trim_end_matches("/"),
+                                    schema_path.trim_start_matches("/")
+                                )
+                            }
+                        } else {
+                            format!("{schema_path}")
+                        };
+
+                        println!("Success: added publish, check schema at: {output_path}");
+                    }
+                }
+            }
+        },
+        Commands::Init { commands: None } => {
             match config::get_file(&cli.global_args.crunch_file).await {
                 Ok(_) => anyhow::bail!("config file already exists"),
                 Err(_) => {}
