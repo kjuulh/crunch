@@ -111,7 +111,7 @@ async fn main() -> anyhow::Result<()> {
                             .prompt()?;
                         let entity = inquire::Text::new("entity")
                             .with_help_message("please set which entity you want to publish for")
-                            .with_default("example")
+                            .with_placeholder("some-entity")
                             .prompt_skippable()?;
 
                         if let Some(entity) = entity {
