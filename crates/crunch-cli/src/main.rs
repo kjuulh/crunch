@@ -110,10 +110,48 @@ async fn main() -> anyhow::Result<()> {
                             .with_default("src/gencrunch")
                             .prompt()?;
 
-                        let config = config.add_publish(&schema_path, &output_path);
-                        config.write_file(&cli.global_args.crunch_file).await?;
+                        let bootstrap_schema = inquire::Confirm::new("bootstrap schema file")
+                            .with_help_message(
+                                "will create an example protobuf file in the supplied schema_path",
+                            )
+                            .with_default(true)
+                            .prompt()?;
+                        if bootstrap_schema {
+                            let config = config.add_publish(&schema_path, &output_path);
+                            config.write_file(&cli.global_args.crunch_file).await?;
 
-                        // TODO: add example schema
+                            let schema_output_path = cli
+                                .global_args
+                                .crunch_file
+                                .parent()
+                                .unwrap_or(&PathBuf::from(""))
+                                .join(&schema_path)
+                                .join("event.proto");
+                            if let Some(dir) = schema_output_path.parent() {
+                                if !dir.exists() {
+                                    tokio::fs::create_dir_all(dir).await?;
+                                }
+                            }
+                            let config = config.get_config()?;
+                            let mut schema_file =
+                                tokio::fs::File::create(schema_output_path).await?;
+                            schema_file
+                                .write_all(
+                                    format!(
+                                        r#"syntax = "proto3";
+
+package {}.{};
+
+message MyEvent {{
+    string my_field = 1;
+}}
+"#,
+                                        config.service.domain, config.service.service
+                                    )
+                                    .as_bytes(),
+                                )
+                                .await?;
+                        }
 
                         let output_path = if let Some(dir) = &cli.global_args.crunch_file.parent() {
                             if dir.display().to_string() == "" {
