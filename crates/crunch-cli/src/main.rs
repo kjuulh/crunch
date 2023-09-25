@@ -109,15 +109,13 @@ async fn main() -> anyhow::Result<()> {
                             )
                             .with_default("src/gencrunch")
                             .prompt()?;
+                        let entity = inquire::Text::new("entity")
+                            .with_help_message("please set which entity you want to publish for")
+                            .with_default("example")
+                            .prompt_skippable()?;
 
-                        let bootstrap_schema = inquire::Confirm::new("bootstrap schema file")
-                            .with_help_message(
-                                "will create an example protobuf file in the supplied schema_path",
-                            )
-                            .with_default(true)
-                            .prompt()?;
-                        if bootstrap_schema {
-                            let config = config.add_publish(&schema_path, &output_path);
+                        if let Some(entity) = entity {
+                            let config = config.add_publish(&schema_path, &output_path, &[&entity]);
                             config.write_file(&cli.global_args.crunch_file).await?;
 
                             let schema_output_path = cli
@@ -126,7 +124,7 @@ async fn main() -> anyhow::Result<()> {
                                 .parent()
                                 .unwrap_or(&PathBuf::from(""))
                                 .join(&schema_path)
-                                .join("event.proto");
+                                .join(format!("{}.proto", entity));
                             if let Some(dir) = schema_output_path.parent() {
                                 if !dir.exists() {
                                     tokio::fs::create_dir_all(dir).await?;
@@ -146,7 +144,7 @@ message MyEvent {{
     string my_field = 1;
 }}
 "#,
-                                        config.service.domain, config.service.service
+                                        config.service.domain, entity
                                     )
                                     .as_bytes(),
                                 )

@@ -26,6 +26,7 @@ pub struct Publish {
     pub schema_path: String,
     #[serde(alias = "output-path")]
     pub output_path: String,
+    pub entities: Vec<String>,
 }
 
 #[allow(dead_code)]
@@ -65,10 +66,21 @@ impl File {
         Ok(content)
     }
 
-    pub fn add_publish(&mut self, schema_path: &str, output_path: &str) -> &mut Self {
+    pub fn add_publish(
+        &mut self,
+        schema_path: &str,
+        output_path: &str,
+        entities: &[&str],
+    ) -> &mut Self {
         let mut publish = toml_edit::Table::new();
         publish["schema-path"] = value(schema_path);
         publish["output-path"] = value(output_path);
+
+        let mut entities_arr = toml_edit::Array::new();
+        for entity in entities {
+            entities_arr.push(entity.to_string());
+        }
+        publish["entities"] = value(entities_arr);
 
         if !self.doc.contains_key("publish") {
             tracing::debug!("publish key not existing, adding new");
@@ -141,7 +153,7 @@ schema-path = "some-schema"
 output-path = "some-output"
 "#;
         let mut config = File::parse(raw).await?;
-        let config = config.add_publish("some-schema", "some-output");
+        let config = config.add_publish("some-schema", "some-output", &[]);
         let output = config.write().await?;
 
         pretty_assertions::assert_eq!(output, expected);
@@ -166,7 +178,7 @@ schema-path = "some-schema"
 output-path = "some-output"
 "#;
         let mut config = File::parse(raw).await?;
-        let config = config.add_publish("some-schema", "some-output");
+        let config = config.add_publish("some-schema", "some-output", &[]);
         let output = config.write().await?;
 
         pretty_assertions::assert_eq!(output, expected);
