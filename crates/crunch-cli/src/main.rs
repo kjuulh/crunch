@@ -144,7 +144,8 @@ message MyEvent {{
     string my_field = 1;
 }}
 "#,
-                                        config.service.domain, entity
+                                        config.service.domain.replace("-", "_"),
+                                        entity.replace("-", "_")
                                     )
                                     .as_bytes(),
                                 )
