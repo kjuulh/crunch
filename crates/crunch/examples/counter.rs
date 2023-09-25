@@ -46,7 +46,7 @@ async fn main() -> anyhow::Result<()> {
             let counter = inner_counter.clone();
 
             async move {
-                tracing::info!(
+                tracing::debug!(
                     "subscription got event: {}, info: {}",
                     item.name,
                     item.int_event_info(),
