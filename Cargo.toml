@@ -21,7 +21,7 @@ async-trait = "0.1.73"
 uuid = { version = "1.4.1", features = ["v4"]}
 futures = "0.3.28"
 nats = "0.24.0"
-clap = {version = "4.4.4", features = ["derive"]}
+clap = {version = "4.4.5", features = ["derive"]}
 toml_edit = {version = "0.20.0",features = ["serde"]}
 serde = {version = "1.0.188", features = ["derive"]}
 prost = {version  = "0.12"}
@@ -29,7 +29,7 @@ prost-types = {version = "0.12"}
 prost-build = "0.12"
 bytes = {version = "1.5"}
 tempfile = {version = "3.8.0"}
-genco = {version = "0.17.5"}
+genco = {version = "0.17.6"}
 walkdir = {version = "2.4.0"}
 regex = {version = "1.9.5"}
 inquire = {version = "0.6.2"}
