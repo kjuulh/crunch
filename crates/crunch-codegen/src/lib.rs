@@ -62,9 +62,7 @@ impl Node {
         }
 
         quote! {
-            pub mod $(&self.segment) {
-                $(for tokens in child_tokens join ($['\r']) => $tokens)
-            }
+            $(for tokens in child_tokens join ($['\r']) => $tokens)
         }
     }
 
