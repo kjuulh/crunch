@@ -53,45 +53,56 @@ impl Node {
     }
 
     fn traverse(&self) -> genco::lang::rust::Tokens {
-        for (_, node) in self.children.iter() {
-            return node.traverse_indent(0);
+        let mut child_tokens = Vec::new();
+        let mut nodes = self.children.iter().map(|(_, n)| n).collect::<Vec<_>>();
+        nodes.sort_by(|a, b| a.segment.cmp(&b.segment));
+        for node in nodes {
+            let tokens = node.traverse_indent(0);
+            child_tokens.push(tokens);
         }
 
-        self.traverse_indent(0)
+        quote! {
+            pub mod $(&self.segment) {
+                $(for tokens in child_tokens join ($['\r']) => $tokens)
+            }
+        }
     }
 
     fn traverse_indent(&self, indent: usize) -> genco::lang::rust::Tokens {
         let padding = " ".repeat(indent * 4);
 
+        println!("visited: {}", self.segment);
+
         let mut message_tokens = Vec::new();
         if let Some(file) = &self.file {
             if let Some(messages) = &self.messages {
                 for message in messages.iter() {
+                    println!("messages: {message}");
                     let tokens: genco::lang::rust::Tokens = quote! {
-                    $['\r']$(&padding)impl ::crunch::traits::Serializer for $(message) {
-                    $['\r']$(&padding)    fn serialize(&self) -> Result<Vec<u8>, ::crunch::errors::SerializeError> {
-                    $['\r']$(&padding)        Ok(self.encode_to_vec())
-                    $['\r']$(&padding)    }
-                    $['\r']$(&padding)}
-                    $['\r']$(&padding)impl ::crunch::traits::Deserializer for $(message) {
-                    $['\r']$(&padding)    fn deserialize(raw: Vec<u8>) -> Result<Self, ::crunch::errors::DeserializeError>
-                    $['\r']$(&padding)    where
-                    $['\r']$(&padding)        Self: Sized,
-                    $['\r']$(&padding)    {
-                    $['\r']$(&padding)        let output  = Self::decode(raw.as_slice()).map_err(|e| ::crunch::errors::DeserializeError::ProtoErr(e))?;
-                    $['\r']$(&padding)        Ok(output)
-                    $['\r']$(&padding)    }
-                    $['\r']$(&padding)}
-                    $['\r']$(&padding)
-                    $['\r']$(&padding)impl crunch::traits::Event for $(message) {
-                    $['\r']$(&padding)    fn event_info() -> ::crunch::traits::EventInfo {
-                    $['\r']$(&padding)        ::crunch::traits::EventInfo {
-                    $['\r']$(&padding)            domain: "my-domain",
-                    $['\r']$(&padding)            entity_type: "my-entity-type",
-                    $['\r']$(&padding)            event_name: "my-event-name",
-                    $['\r']$(&padding)        }
-                    $['\r']$(&padding)    }
-                    $['\r']$(&padding)}
+                    impl ::crunch::traits::Serializer for $(message) {
+                        fn serialize(&self) -> Result<Vec<u8>, ::crunch::errors::SerializeError> {
+                            Ok(self.encode_to_vec())
+                        }
+                    }
+                    impl ::crunch::traits::Deserializer for $(message) {
+                        fn deserialize(raw: Vec<u8>) -> Result<Self, ::crunch::errors::DeserializeError>
+                        where
+                            Self: Sized,
+                        {
+                            let output  = Self::decode(raw.as_slice()).map_err(|e| ::crunch::errors::DeserializeError::ProtoErr(e))?;
+                            Ok(output)
+                        }
+                    }
+
+                    impl crunch::traits::Event for $(message) {
+                        fn event_info() -> ::crunch::traits::EventInfo {
+                            ::crunch::traits::EventInfo {
+                                domain: "my-domain",
+                                entity_type: "my-entity-type",
+                                event_name: "my-event-name",
+                            }
+                        }
+                    }
                     };
 
                     message_tokens.push(tokens);
@@ -99,23 +110,25 @@ impl Node {
             }
 
             quote! {
-                $['\r']$(&padding)pub mod $(&self.segment) {
+                pub mod $(&self.segment) {
                     use prost::Message;
-                    $['\r']$(&padding)include!($(quoted(file)));
-                    $['\r']$(&padding)$(for tokens in message_tokens join ($['\r']) => $tokens)
-                $['\r']$(&padding)}
+                    include!($(quoted(file)));
+                    $(for tokens in message_tokens join ($['\r']) => $tokens)
+                }
             }
         } else {
             let mut child_tokens = Vec::new();
-            for (_children, nodes) in &self.children {
-                let tokens = nodes.traverse_indent(indent + 1);
+            let mut nodes = self.children.iter().map(|(_, n)| n).collect::<Vec<_>>();
+            nodes.sort_by(|a, b| a.segment.cmp(&b.segment));
+            for node in nodes {
+                let tokens = node.traverse_indent(indent + 1);
                 child_tokens.push(tokens);
             }
 
             quote! {
-                $['\r']$(&padding)pub mod $(&self.segment) {
-                    $(&padding)$(for tokens in child_tokens join ($['\r']) => $tokens)
-                $['\r']$(&padding)}
+                pub mod $(&self.segment) {
+                    $(for tokens in child_tokens join ($['\r']) => $tokens)
+                }
             }
         }
     }
@@ -236,15 +249,19 @@ impl Codegen {
         let regex = Regex::new(r"pub struct (?P<eventName>[a-zA-Z0-9-_]+)")
             .expect("regex to be well formed");
 
+        let mut output_paths = output_paths.to_vec();
+        output_paths.sort();
+
         for generated_file in output_paths {
             if let Some(name) = generated_file.file_name() {
                 let file_name = name.to_str().unwrap();
-                let file = tokio::fs::read_to_string(generated_file).await?;
-                let messages = regex
+                let file = tokio::fs::read_to_string(&generated_file).await?;
+                let mut messages = regex
                     .captures_iter(&file)
                     .map(|m| m.name("eventName").unwrap())
                     .map(|m| m.as_str().to_string())
-                    .collect();
+                    .collect::<Vec<_>>();
+                messages.sort();
 
                 node.insert(file_name, messages);
             }

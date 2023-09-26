@@ -1,8 +1,9 @@
 [service]
-service = "my-service"
-domain = "my-domain"
+service = "basic-setup"
+domain = "examples"
 codegen = ["rust"]
 
-[[publish]]	
+[[publish]]
 schema-path = "schemas/crunch"
 output-path = "src/gencrunch"
+entities = ["example"]
