@@ -71,13 +71,13 @@ impl Node {
     fn traverse_indent(&self, indent: usize) -> genco::lang::rust::Tokens {
         let padding = " ".repeat(indent * 4);
 
-        println!("visited: {}", self.segment);
+        tracing::trace!("node traverse visited: {}", self.segment);
 
         let mut message_tokens = Vec::new();
         if let Some(file) = &self.file {
             if let Some(messages) = &self.messages {
                 for message in messages.iter() {
-                    println!("messages: {message}");
+                    tracing::trace!("node traverse visited message: {}", message);
                     let tokens: genco::lang::rust::Tokens = quote! {
                     impl ::crunch::traits::Serializer for $(message) {
                         fn serialize(&self) -> Result<Vec<u8>, ::crunch::errors::SerializeError> {
