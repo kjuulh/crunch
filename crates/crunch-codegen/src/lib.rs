@@ -69,8 +69,6 @@ impl Node {
     }
 
     fn traverse_indent(&self, indent: usize) -> genco::lang::rust::Tokens {
-        let padding = " ".repeat(indent * 4);
-
         tracing::trace!("node traverse visited: {}", self.segment);
 
         let mut message_tokens = Vec::new();
