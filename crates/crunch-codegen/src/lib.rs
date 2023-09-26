@@ -77,30 +77,30 @@ impl Node {
                 for message in messages.iter() {
                     tracing::trace!("node traverse visited message: {}", message);
                     let tokens: genco::lang::rust::Tokens = quote! {
-                    impl ::crunch::traits::Serializer for $(message) {
-                        fn serialize(&self) -> Result<Vec<u8>, ::crunch::errors::SerializeError> {
-                            Ok(self.encode_to_vec())
-                        }
-                    }
-                    impl ::crunch::traits::Deserializer for $(message) {
-                        fn deserialize(raw: Vec<u8>) -> Result<Self, ::crunch::errors::DeserializeError>
-                        where
-                            Self: Sized,
-                        {
-                            let output  = Self::decode(raw.as_slice()).map_err(|e| ::crunch::errors::DeserializeError::ProtoErr(e))?;
-                            Ok(output)
-                        }
-                    }
-
-                    impl crunch::traits::Event for $(message) {
-                        fn event_info() -> ::crunch::traits::EventInfo {
-                            ::crunch::traits::EventInfo {
-                                domain: "my-domain",
-                                entity_type: "my-entity-type",
-                                event_name: "my-event-name",
+                        impl ::crunch::traits::Serializer for $(message) {
+                            fn serialize(&self) -> Result<Vec<u8>, ::crunch::errors::SerializeError> {
+                                Ok(self.encode_to_vec())
                             }
                         }
-                    }
+                        impl ::crunch::traits::Deserializer for $(message) {
+                            fn deserialize(raw: Vec<u8>) -> Result<Self, ::crunch::errors::DeserializeError>
+                            where
+                                Self: Sized,
+                            {
+                                let output  = Self::decode(raw.as_slice()).map_err(|e| ::crunch::errors::DeserializeError::ProtoErr(e))?;
+                                Ok(output)
+                            }
+                        }
+
+                        impl crunch::traits::Event for $(message) {
+                            fn event_info() -> ::crunch::traits::EventInfo {
+                                ::crunch::traits::EventInfo {
+                                    domain: "my-domain",
+                                    entity_type: "my-entity-type",
+                                    event_name: "my-event-name",
+                                }
+                            }
+                        }
                     };
 
                     message_tokens.push(tokens);
