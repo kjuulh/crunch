@@ -620,6 +620,10 @@ dependencies = [
 ]
 
 [[package]]
+name = "crunch-postgres"
+version = "0.1.0"
+
+[[package]]
 name = "crunch-traits"
 version = "0.1.0"
 dependencies = [
