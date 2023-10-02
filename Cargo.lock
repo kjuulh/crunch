@@ -622,6 +622,18 @@ dependencies = [
 [[package]]
 name = "crunch-postgres"
 version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "async-trait",
+ "crunch-envelope",
+ "crunch-traits",
+ "futures",
+ "thiserror",
+ "tokio",
+ "tokio-stream",
+ "tracing",
+ "uuid",
+]
 
 [[package]]
 name = "crunch-traits"

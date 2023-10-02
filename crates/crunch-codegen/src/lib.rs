@@ -54,7 +54,7 @@ impl Node {
 
     fn traverse(&self) -> genco::lang::rust::Tokens {
         let mut child_tokens = Vec::new();
-        let mut nodes = self.children.iter().map(|(_, n)| n).collect::<Vec<_>>();
+        let mut nodes = self.children.values().collect::<Vec<_>>();
         nodes.sort_by(|a, b| a.segment.cmp(&b.segment));
         for node in nodes {
             let tokens = node.traverse_indent(0);
@@ -114,7 +114,7 @@ impl Node {
             }
         } else {
             let mut child_tokens = Vec::new();
-            let mut nodes = self.children.iter().map(|(_, n)| n).collect::<Vec<_>>();
+            let mut nodes = self.children.values().collect::<Vec<_>>();
             nodes.sort_by(|a, b| a.segment.cmp(&b.segment));
             for node in nodes {
                 let tokens = node.traverse_indent(indent + 1);

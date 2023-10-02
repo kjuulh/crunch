@@ -235,7 +235,8 @@ output-path = "some-output"
                 },
                 publish: Some(vec![Publish {
                     schema_path: "some-schema".into(),
-                    output_path: "some-output".into()
+                    output_path: "some-output".into(),
+                    entities: vec![]
                 }])
             }
         );

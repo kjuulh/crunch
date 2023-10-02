@@ -144,8 +144,8 @@ message MyEvent {{
     string my_field = 1;
 }}
 "#,
-                                        config.service.domain.replace("-", "_"),
-                                        entity.replace("-", "_")
+                                        config.service.domain.replace('-', "_"),
+                                        entity.replace('-', "_")
                                     )
                                     .as_bytes(),
                                 )
@@ -154,16 +154,16 @@ message MyEvent {{
 
                         let output_path = if let Some(dir) = &cli.global_args.crunch_file.parent() {
                             if dir.display().to_string() == "" {
-                                format!("{schema_path}")
+                                schema_path.to_string()
                             } else {
                                 format!(
                                     "{}/{}",
-                                    dir.display().to_string().trim_end_matches("/"),
-                                    schema_path.trim_start_matches("/")
+                                    dir.display().to_string().trim_end_matches('/'),
+                                    schema_path.trim_start_matches('/')
                                 )
                             }
                         } else {
-                            format!("{schema_path}")
+                            schema_path.to_string()
                         };
 
                         println!("Success: added publish, check schema at: {output_path}");
@@ -172,9 +172,8 @@ message MyEvent {{
             }
         },
         Commands::Init { commands: None } => {
-            match config::get_file(&cli.global_args.crunch_file).await {
-                Ok(_) => anyhow::bail!("config file already exists"),
-                Err(_) => {}
+            if (config::get_file(&cli.global_args.crunch_file).await).is_ok() {
+                anyhow::bail!("config file already exists")
             }
 
             let path = &cli.global_args.crunch_file;

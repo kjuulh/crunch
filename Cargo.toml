@@ -10,6 +10,7 @@ crunch-in-memory = { path = "crates/crunch-in-memory" }
 crunch-nats = { path = "crates/crunch-nats" }
 crunch-file = {path = "crates/crunch-file"}
 crunch-codegen = {path = "crates/crunch-codegen"}
+crunch-postgres = {path = "crates/crunch-postgres"}
 
 anyhow = { version = "1.0.75" }
 tokio = { version = "1", features = ["full"] }

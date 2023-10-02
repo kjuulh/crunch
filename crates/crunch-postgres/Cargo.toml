@@ -6,3 +6,14 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+crunch-traits.workspace = true
+crunch-envelope.workspace = true
+
+anyhow.workspace = true
+tracing.workspace = true
+tokio.workspace = true
+thiserror.workspace = true
+async-trait.workspace = true
+futures.workspace = true
+uuid.workspace = true
+tokio-stream = {workspace = true, features = ["sync"]}
