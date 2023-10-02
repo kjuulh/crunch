@@ -1,5 +1,5 @@
-mod impls;
 mod outbox;
+mod persistence;
 mod publisher;
 mod subscriber;
 mod transport;
@@ -14,8 +14,8 @@ pub mod errors {
 }
 
 use crunch_traits::Event;
-pub use impls::Persistence;
 pub use outbox::OutboxHandler;
+pub use persistence::Persistence;
 pub use publisher::Publisher;
 pub use subscriber::Subscriber;
 pub use transport::Transport;
