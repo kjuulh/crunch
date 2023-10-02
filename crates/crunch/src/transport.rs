@@ -10,9 +10,9 @@ impl Transport {
 
     #[cfg(feature = "in-memory")]
     pub fn in_memory() -> Self {
-        Self(std::sync::Arc::new(
-            crunch_in_memory::InMemoryTransport::default(),
-        ))
+        use crunch_in_memory::transport::InMemoryTransport;
+
+        Self(std::sync::Arc::new(InMemoryTransport::default()))
     }
 
     #[cfg(feature = "nats")]
