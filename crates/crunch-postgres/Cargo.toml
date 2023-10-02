@@ -3,8 +3,7 @@ name = "crunch-postgres"
 version = "0.1.0"
 edition = "2021"
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
-
+ 
 [dependencies]
 crunch-traits.workspace = true
 crunch-envelope.workspace = true
@@ -16,4 +15,5 @@ thiserror.workspace = true
 async-trait.workspace = true
 futures.workspace = true
 uuid.workspace = true
+sqlx.workspace = true
 tokio-stream = {workspace = true, features = ["sync"]}
