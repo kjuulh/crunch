@@ -37,6 +37,6 @@ genco = {version = "0.17.6"}
 walkdir = {version = "2.4.0"}
 regex = {version = "1.9.5"}
 inquire = {version = "0.6.2"}
-sqlx = {version = "0.7.2", default-features = false, features = ["migrate", "macros", "postgres", "runtime-tokio", "tls-rustls", "chrono" ]}
+sqlx = {version = "0.7.2", default-features = false, features = ["migrate", "macros", "postgres", "runtime-tokio", "tls-rustls", "chrono", "json" ]}
 
 pretty_assertions = "1.4.0"
