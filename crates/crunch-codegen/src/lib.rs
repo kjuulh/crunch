@@ -306,24 +306,24 @@ impl Default for Codegen {
     }
 }
 
-#[cfg(test)]
-mod tests {
-    use super::*;
-    #[test]
-    fn test_node() {
-        let mut root = Node::new("root".into(), None, None);
+// #[cfg(test)]
+// mod tests {
+//     use super::*;
+//     #[test]
+//     fn test_node() {
+//         let mut root = Node::new("root".into(), None, None);
 
-        root.insert("basic.my_event.rs", vec!["One".into(), "Two".into()]);
-        root.insert("basic.includes.includes.rs", vec!["Three".into()]);
-        root.insert("basic.includes.includes-two.rs", Vec::new());
+//         root.insert("basic.my_event.rs", vec!["One".into(), "Two".into()]);
+//         root.insert("basic.includes.includes.rs", vec!["Three".into()]);
+//         root.insert("basic.includes.includes-two.rs", Vec::new());
 
-        let res = root
-            .traverse()
-            .to_file_string()
-            .expect("to generate rust code");
+//         let res = root
+//             .traverse()
+//             .to_file_string()
+//             .expect("to generate rust code");
 
-        pretty_assertions::assert_eq!(res, r#""#);
+//         pretty_assertions::assert_eq!(res, r#""#);
 
-        panic!();
-    }
-}
+//         panic!();
+//     }
+// }

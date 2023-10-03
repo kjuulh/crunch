@@ -4,5 +4,5 @@ CREATE TABLE outbox (
     metadata JSONB NOT NULL,
     content BYTEA NOT NULL,
     inserted_time TIMESTAMPTZ NOT NULL DEFAULT now(),
-    state VARCHAR NOT NULL,
+    state VARCHAR NOT NULL
 );

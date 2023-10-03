@@ -21,6 +21,10 @@ pub struct Msg {
     state: MsgState,
 }
 
+pub struct InMemoryTx {}
+
+impl crunch_traits::Tx for InMemoryTx {}
+
 pub struct InMemoryPersistence {
     pub outbox: Arc<RwLock<VecDeque<Msg>>>,
     pub store: Arc<RwLock<BTreeMap<String, Msg>>>,
@@ -49,9 +53,11 @@ impl crunch_traits::Persistence for InMemoryPersistence {
         Ok(())
     }
 
-    async fn next(&self) -> Option<String> {
+    async fn next(&self) -> Result<Option<(String, crunch_traits::DynTx)>, PersistenceError> {
         let mut outbox = self.outbox.write().await;
-        outbox.pop_front().map(|i| i.id)
+        Ok(outbox
+            .pop_front()
+            .map(|i| (i.id, Box::new(InMemoryTx {}) as crunch_traits::DynTx)))
     }
 
     async fn get(&self, event_id: &str) -> Result<Option<(EventInfo, Vec<u8>)>, PersistenceError> {

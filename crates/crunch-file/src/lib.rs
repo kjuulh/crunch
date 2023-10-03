@@ -151,6 +151,7 @@ output-path = "src/crunch"
 [[publish]]
 schema-path = "some-schema"
 output-path = "some-output"
+entities = []
 "#;
         let mut config = File::parse(raw).await?;
         let config = config.add_publish("some-schema", "some-output", &[]);
@@ -176,6 +177,7 @@ codegen = ["rust"]
 [[publish]]
 schema-path = "some-schema"
 output-path = "some-output"
+entities = []
 "#;
         let mut config = File::parse(raw).await?;
         let config = config.add_publish("some-schema", "some-output", &[]);
@@ -221,6 +223,7 @@ codegen = ["rust"]
 [[publish]]
 schema-path = "some-schema"
 output-path = "some-output"
+entities = []
 "#;
 
         let config = File::parse(raw).await?.get_config()?;

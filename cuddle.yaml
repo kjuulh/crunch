@@ -5,3 +5,11 @@ base: "git@git.front.kjuulh.io:kjuulh/cuddle-base.git"
 vars:
   service: "crunch"
   registry: kasperhermansen
+
+scripts:
+  local_up:
+    type: shell
+  local_down:
+    type: shell
+  "db:shell":
+    type: shell

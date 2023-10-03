@@ -54,6 +54,9 @@ pub enum PersistenceError {
 
     #[error("failed to publish item {0}")]
     UpdatePublished(anyhow::Error),
+
+    #[error("database query failed {0}")]
+    AnyErr(anyhow::Error),
 }
 
 #[derive(Error, Debug)]

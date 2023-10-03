@@ -34,8 +34,8 @@ impl OutboxHandler {
 }
 
 async fn handle_messages(p: &Persistence, t: &Transport) -> anyhow::Result<Option<()>> {
-    match p.next().await {
-        Some(item) => match p.get(&item).await? {
+    match p.next().await? {
+        Some((item, _)) => match p.get(&item).await? {
             Some((info, content)) => {
                 t.publish(&info, content).await?;
                 p.update_published(&item).await?;

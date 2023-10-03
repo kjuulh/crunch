@@ -3,10 +3,14 @@ use std::fmt::Display;
 use async_trait::async_trait;
 use errors::{DeserializeError, PersistenceError, SerializeError};
 
+pub trait Tx: Send + Sync {}
+
+pub type DynTx = Box<dyn Tx>;
+
 #[async_trait]
 pub trait Persistence {
     async fn insert(&self, event_info: &EventInfo, content: Vec<u8>) -> anyhow::Result<()>;
-    async fn next(&self) -> Option<String>;
+    async fn next(&self) -> Result<Option<(String, DynTx)>, PersistenceError>;
     async fn get(&self, event_id: &str) -> Result<Option<(EventInfo, Vec<u8>)>, PersistenceError>;
     async fn update_published(&self, event_id: &str) -> Result<(), PersistenceError>;
 }

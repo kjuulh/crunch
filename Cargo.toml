@@ -28,6 +28,7 @@ nats = "0.24.0"
 clap = {version = "4.4.5", features = ["derive"]}
 toml_edit = {version = "0.20.0",features = ["serde"]}
 serde = {version = "1.0.188", features = ["derive"]}
+serde_json = {version = "1.0.107"}
 prost = {version  = "0.12"}
 prost-types = {version = "0.12"}
 prost-build = "0.12"
@@ -37,6 +38,6 @@ genco = {version = "0.17.6"}
 walkdir = {version = "2.4.0"}
 regex = {version = "1.9.5"}
 inquire = {version = "0.6.2"}
-sqlx = {version = "0.7.2", default-features = false, features = ["migrate", "macros", "postgres", "runtime-tokio", "tls-rustls", "chrono", "json" ]}
+sqlx = {version = "0.7.2", default-features = false, features = ["migrate", "macros", "postgres", "runtime-tokio", "tls-rustls", "chrono", "json", "uuid" ]}
 
 pretty_assertions = "1.4.0"
