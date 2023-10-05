@@ -141,6 +141,23 @@ FOR UPDATE;
         }
     }
     async fn update_published(&self, event_id: &str) -> Result<(), PersistenceError> {
-        todo!()
+        sqlx::query(
+            r#"
+UPDATE outbox
+SET state = 'handled'
+WHERE id = $1;
+"#,
+        )
+        .bind(
+            Uuid::parse_str(event_id)
+                .map_err(|e| anyhow::anyhow!(e))
+                .map_err(PersistenceError::UpdatePublished)?,
+        )
+        .execute(&self.pool)
+        .await
+        .map_err(|e| anyhow::anyhow!(e))
+        .map_err(PersistenceError::UpdatePublished)?;
+
+        Ok(())
     }
 }

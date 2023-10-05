@@ -8,9 +8,9 @@ async fn test_persistence_insert() -> anyhow::Result<()> {
     persistence
         .insert(
             &EventInfo {
-                domain: "some-domain",
-                entity_type: "some-entity-type",
-                event_name: "some-event-name",
+                domain: "some-domain".into(),
+                entity_type: "some-entity-type".into(),
+                event_name: "some-event-name".into(),
             },
             b"some-strange-and-cruncy-content".to_vec(),
         )
@@ -19,9 +19,9 @@ async fn test_persistence_insert() -> anyhow::Result<()> {
     persistence
         .insert(
             &EventInfo {
-                domain: "some-domain",
-                entity_type: "some-entity-type",
-                event_name: "some-event-name",
+                domain: "some-domain".into(),
+                entity_type: "some-entity-type".into(),
+                event_name: "some-event-name".into(),
             },
             b"some-strange-and-cruncy-content".to_vec(),
         )
@@ -37,9 +37,9 @@ async fn test_persistence_next() -> anyhow::Result<()> {
     persistence
         .insert(
             &EventInfo {
-                domain: "some-domain",
-                entity_type: "some-entity-type",
-                event_name: "some-event-name",
+                domain: "some-domain".into(),
+                entity_type: "some-entity-type".into(),
+                event_name: "some-event-name".into(),
             },
             b"some-strange-and-cruncy-content".to_vec(),
         )
@@ -48,9 +48,9 @@ async fn test_persistence_next() -> anyhow::Result<()> {
     persistence
         .insert(
             &EventInfo {
-                domain: "some-domain",
-                entity_type: "some-entity-type",
-                event_name: "some-event-name",
+                domain: "some-domain".into(),
+                entity_type: "some-entity-type".into(),
+                event_name: "some-event-name".into(),
             },
             b"some-strange-and-cruncy-content".to_vec(),
         )
@@ -58,6 +58,50 @@ async fn test_persistence_next() -> anyhow::Result<()> {
 
     assert!(persistence.next().await?.is_some());
     assert!(persistence.next().await?.is_some());
+
+    Ok(())
+}
+
+#[tokio::test]
+async fn test_persistence_get() -> anyhow::Result<()> {
+    let persistence = PostgresPersistence::new_from_env().await?;
+
+    persistence
+        .insert(
+            &EventInfo {
+                domain: "some-domain".into(),
+                entity_type: "some-entity-type".into(),
+                event_name: "some-event-name".into(),
+            },
+            b"some-strange-and-cruncy-content".to_vec(),
+        )
+        .await?;
+
+    let (event_id, _) = persistence.next().await?.unwrap();
+    let (_, _) = persistence.get(&event_id).await?.unwrap();
+
+    Ok(())
+}
+
+#[tokio::test]
+async fn test_persistence_update() -> anyhow::Result<()> {
+    let persistence = PostgresPersistence::new_from_env().await?;
+
+    persistence
+        .insert(
+            &EventInfo {
+                domain: "some-domain".into(),
+                entity_type: "some-entity-type".into(),
+                event_name: "some-event-name".into(),
+            },
+            b"some-strange-and-cruncy-content".to_vec(),
+        )
+        .await?;
+
+    let (event_id, _) = persistence.next().await?.unwrap();
+    let (_, _) = persistence.get(&event_id).await?.unwrap();
+
+    persistence.update_published(&event_id).await?;
 
     Ok(())
 }
