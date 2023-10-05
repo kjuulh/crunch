@@ -93,9 +93,9 @@ impl Node {
                         impl crunch::traits::Event for $(message) {
                             fn event_info() -> ::crunch::traits::EventInfo {
                                 ::crunch::traits::EventInfo {
-                                    domain: "my-domain",
-                                    entity_type: "my-entity-type",
-                                    event_name: "my-event-name",
+                                    domain: "my-domain".into(),
+                                    entity_type: "my-entity-type".into(),
+                                    event_name: "my-event-name".into(),
                                 }
                             }
                         }

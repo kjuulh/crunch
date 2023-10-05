@@ -64,7 +64,7 @@ impl Transport for InMemoryTransport {
             .expect("transport to be available, as we just created it");
         sender
             .send(TransportEnvelope {
-                info: *event_info,
+                info: event_info.to_owned(),
                 content,
             })
             .map_err(|e| anyhow::anyhow!(e.to_string()))

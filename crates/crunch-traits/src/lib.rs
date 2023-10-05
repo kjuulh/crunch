@@ -25,11 +25,11 @@ pub trait Deserializer {
         Self: Sized;
 }
 
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone)]
 pub struct EventInfo {
-    pub domain: &'static str,
-    pub entity_type: &'static str,
-    pub event_name: &'static str,
+    pub domain: String,
+    pub entity_type: String,
+    pub event_name: String,
 }
 
 impl Display for EventInfo {

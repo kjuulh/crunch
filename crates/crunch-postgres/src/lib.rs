@@ -36,19 +36,41 @@ struct InsertResp {
 
 #[derive(Clone, Serialize, Deserialize)]
 struct PgEventInfo {
-    domain: &'static str,
-    entity_type: &'static str,
-    event_name: &'static str,
+    domain: String,
+    entity_type: String,
+    event_name: String,
 }
 
 impl From<&EventInfo> for PgEventInfo {
     fn from(value: &EventInfo) -> Self {
+        let value = value.to_owned();
+
         Self {
             domain: value.domain,
             entity_type: value.entity_type,
             event_name: value.event_name,
         }
     }
+}
+
+impl From<PgEventInfo> for EventInfo {
+    fn from(value: PgEventInfo) -> Self {
+        EventInfo {
+            domain: value.domain,
+            entity_type: value.entity_type,
+            event_name: value.event_name,
+        }
+    }
+}
+
+#[allow(dead_code)]
+#[derive(sqlx::FromRow)]
+struct OutboxEvent {
+    id: Uuid,
+    metadata: Json<PgEventInfo>,
+    content: Vec<u8>,
+    inserted_time: chrono::DateTime<chrono::Utc>,
+    state: String,
 }
 
 #[async_trait]
@@ -93,15 +115,30 @@ FOR UPDATE;
         .map_err(|e| anyhow::anyhow!(e))
         .map_err(PersistenceError::AnyErr)?;
 
-        let id = match resp {
-            Some(InsertResp { id }) => Some(id.to_string()),
-            None => None,
-        };
+        let id = resp.map(|InsertResp { id }| id.to_string());
 
         Ok(id.map(|id| (id, Box::new(PostgresTx {}) as crunch_traits::DynTx)))
     }
     async fn get(&self, event_id: &str) -> Result<Option<(EventInfo, Vec<u8>)>, PersistenceError> {
-        todo!()
+        let event = sqlx::query_as::<_, OutboxEvent>("SELECT * from outbox where id = $1")
+            .bind(
+                Uuid::parse_str(event_id)
+                    .map_err(|e| anyhow::anyhow!(e))
+                    .map_err(PersistenceError::GetErr)?,
+            )
+            .fetch_optional(&self.pool)
+            .await
+            .map_err(|e| anyhow::anyhow!(e))
+            .map_err(PersistenceError::GetErr)?;
+
+        match event {
+            Some(event) => {
+                let metadata = event.metadata.to_owned();
+
+                Ok(Some((EventInfo::from(metadata.0), event.content)))
+            }
+            None => Ok(None),
+        }
     }
     async fn update_published(&self, event_id: &str) -> Result<(), PersistenceError> {
         todo!()

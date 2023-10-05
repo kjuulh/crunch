@@ -22,7 +22,7 @@ tracing = { version = "0.1", features = ["log"] }
 tracing-subscriber = "0.3.17"
 thiserror = {version = "1.0.48"}
 async-trait = "0.1.73"
-uuid = { version = "1.4.1", features = ["v4"]}
+uuid = { version = "1.4.1", features = ["v4", "serde"]}
 futures = "0.3.28"
 nats = "0.24.0"
 clap = {version = "4.4.5", features = ["derive"]}
@@ -39,5 +39,6 @@ walkdir = {version = "2.4.0"}
 regex = {version = "1.9.5"}
 inquire = {version = "0.6.2"}
 sqlx = {version = "0.7.2", default-features = false, features = ["migrate", "macros", "postgres", "runtime-tokio", "tls-rustls", "chrono", "json", "uuid" ]}
+chrono = {version = "0.4.31", features = ["serde"]}
 
 pretty_assertions = "1.4.0"

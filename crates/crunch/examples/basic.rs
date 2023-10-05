@@ -26,9 +26,9 @@ impl crunch::traits::Deserializer for SomeEvent {
 impl crunch::traits::Event for SomeEvent {
     fn event_info() -> crunch::traits::EventInfo {
         crunch::traits::EventInfo {
-            domain: "some-domain",
-            entity_type: "some-entity",
-            event_name: "some-event",
+            domain: "some-domain".into(),
+            entity_type: "some-entity".into(),
+            event_name: "some-event".into(),
         }
     }
 }

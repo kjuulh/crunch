@@ -33,10 +33,11 @@ pub struct InMemoryPersistence {
 #[async_trait]
 impl crunch_traits::Persistence for InMemoryPersistence {
     async fn insert(&self, event_info: &EventInfo, content: Vec<u8>) -> anyhow::Result<()> {
-        let msg = crunch_envelope::proto::wrap(event_info.domain, event_info.entity_type, &content);
+        let msg =
+            crunch_envelope::proto::wrap(&event_info.domain, &event_info.entity_type, &content);
         let msg = Msg {
             id: uuid::Uuid::new_v4().to_string(),
-            info: *event_info,
+            info: event_info.to_owned(),
             msg,
             state: MsgState::Pending,
         };
@@ -71,7 +72,7 @@ impl crunch_traits::Persistence for InMemoryPersistence {
         let (content, _) = crunch_envelope::proto::unwrap(event.msg.as_slice())
             .map_err(|e| PersistenceError::GetErr(anyhow::anyhow!(e)))?;
 
-        Ok(Some((event.info, content)))
+        Ok(Some((event.info.to_owned(), content)))
     }
 
     async fn update_published(&self, event_id: &str) -> Result<(), PersistenceError> {
