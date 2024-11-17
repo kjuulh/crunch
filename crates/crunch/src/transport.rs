@@ -23,6 +23,13 @@ impl Transport {
             crunch_nats::NatsTransport::new(options).await?,
         )))
     }
+
+    #[cfg(feature = "nodata")]
+    pub fn nodata(host: &str) -> Result<Self, crunch_traits::errors::TransportError> {
+        Ok(Self(std::sync::Arc::new(
+            crunch_nodata::NoDataTransport::new(host),
+        )))
+    }
 }
 
 impl From<DynTransport> for Transport {

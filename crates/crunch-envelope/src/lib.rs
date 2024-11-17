@@ -32,8 +32,8 @@ pub mod capnp {
         envelope.set_content(content);
 
         let mut metadata = envelope.init_metadata();
-        metadata.set_domain(domain);
-        metadata.set_entity(entity);
+        metadata.set_domain(domain.into());
+        metadata.set_entity(entity.into());
 
         serialize::write_message_to_words(&builder)
     }
@@ -56,11 +56,13 @@ pub mod capnp {
                 domain: metadata
                     .get_domain()
                     .map_err(EnvelopeError::CapnpError)?
-                    .to_string(),
+                    .to_string()
+                    .expect("message to be utf8"),
                 entity: metadata
                     .get_entity()
                     .map_err(EnvelopeError::CapnpError)?
-                    .to_string(),
+                    .to_string()
+                    .expect("message to be utf8"),
             },
         ))
     }

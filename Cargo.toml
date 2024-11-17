@@ -11,34 +11,46 @@ crunch-traits = { path = "crates/crunch-traits" }
 crunch-envelope = { path = "crates/crunch-envelope" }
 crunch-in-memory = { path = "crates/crunch-in-memory" }
 crunch-nats = { path = "crates/crunch-nats" }
-crunch-file = {path = "crates/crunch-file"}
-crunch-codegen = {path = "crates/crunch-codegen"}
-crunch-postgres = {path = "crates/crunch-postgres"}
+crunch-file = { path = "crates/crunch-file" }
+crunch-codegen = { path = "crates/crunch-codegen" }
+crunch-postgres = { path = "crates/crunch-postgres" }
+crunch-nodata = { path = "crates/crunch-nodata" }
 
 anyhow = { version = "1.0.75" }
 tokio = { version = "1", features = ["full"] }
-tokio-stream = {version = "0.1.14"}
+tokio-stream = { version = "0.1.14" }
 tracing = { version = "0.1", features = ["log"] }
 tracing-subscriber = "0.3.17"
-thiserror = {version = "1.0.48"}
+thiserror = { version = "1.0.48" }
 async-trait = "0.1.73"
-uuid = { version = "1.4.1", features = ["v4", "serde"]}
+uuid = { version = "1.4.1", features = ["v4", "serde"] }
 futures = "0.3.28"
 nats = "0.24.0"
-clap = {version = "4.4.5", features = ["derive"]}
-toml_edit = {version = "0.20.0",features = ["serde"]}
-serde = {version = "1.0.188", features = ["derive"]}
-serde_json = {version = "1.0.107"}
-prost = {version  = "0.12"}
-prost-types = {version = "0.12"}
+clap = { version = "4.4.5", features = ["derive"] }
+toml_edit = { version = "0.20.0", features = ["serde"] }
+serde = { version = "1.0.188", features = ["derive"] }
+serde_json = { version = "1.0.107" }
+prost = { version = "0.13" }
+prost-types = { version = "0.13" }
 prost-build = "0.12"
-bytes = {version = "1.5"}
-tempfile = {version = "3.8.0"}
-genco = {version = "0.17.6"}
-walkdir = {version = "2.4.0"}
-regex = {version = "1.9.5"}
-inquire = {version = "0.6.2"}
-sqlx = {version = "0.7.2", default-features = false, features = ["migrate", "macros", "postgres", "runtime-tokio", "tls-rustls", "chrono", "json", "uuid" ]}
-chrono = {version = "0.4.31", features = ["serde"]}
+bytes = { version = "1.5" }
+tempfile = { version = "3.8.0" }
+genco = { version = "0.17.6" }
+walkdir = { version = "2.4.0" }
+regex = { version = "1.9.5" }
+inquire = { version = "0.6.2" }
+sqlx = { version = "0.7.2", default-features = false, features = [
+  "migrate",
+  "macros",
+  "postgres",
+  "runtime-tokio",
+  "tls-rustls",
+  "chrono",
+  "json",
+  "uuid",
+] }
+chrono = { version = "0.4.31", features = ["serde"] }
+nodata = { version = "0.1.0" }
+tonic = { version = "0.12.3", features = ["tls", "tls-roots"] }
 
 pretty_assertions = "1.4.0"

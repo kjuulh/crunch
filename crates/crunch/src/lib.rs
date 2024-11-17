@@ -89,6 +89,15 @@ mod builder {
             Ok(self)
         }
 
+        #[cfg(feature = "nodata")]
+        pub async fn with_nodata_transport(
+            &mut self,
+            host: &str,
+        ) -> Result<&mut Self, crunch_traits::errors::TransportError> {
+            self.transport = Some(Transport::nodata(host)?);
+            Ok(self)
+        }
+
         pub fn with_outbox(&mut self, enabled: bool) -> &mut Self {
             self.outbox_enabled = enabled;
             self

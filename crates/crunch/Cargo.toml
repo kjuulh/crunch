@@ -7,7 +7,8 @@ edition = "2021"
 crunch-envelope.workspace = true
 crunch-in-memory = { workspace = true, optional = true }
 crunch-traits.workspace = true
-crunch-nats = {workspace = true,optional = true}
+crunch-nats = { workspace = true, optional = true }
+crunch-nodata = { workspace = true, optional = true }
 
 anyhow.workspace = true
 tracing.workspace = true
@@ -22,7 +23,8 @@ futures.workspace = true
 tracing-subscriber.workspace = true
 
 [features]
-default = ["in-memory", "traits", "nats"]
+default = ["in-memory", "traits"]
 traits = []
 in-memory = ["dep:crunch-in-memory"]
 nats = ["dep:crunch-nats"]
+nodata = ["dep:crunch-nodata"]
