@@ -32,7 +32,7 @@ serde = { version = "1.0.188", features = ["derive"] }
 serde_json = { version = "1.0.107" }
 prost = { version = "0.13" }
 prost-types = { version = "0.13" }
-prost-build = "0.12"
+prost-build = "0.13"
 bytes = { version = "1.5" }
 tempfile = { version = "3.8.0" }
 genco = { version = "0.17.6" }
