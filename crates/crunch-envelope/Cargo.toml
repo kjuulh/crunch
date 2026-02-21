@@ -10,13 +10,13 @@ proto = ["dep:prost", "dep:prost-types", "dep:bytes"]
 capnp = ["dep:capnp"]
 
 [dependencies]
-capnp = { version = "0.18.1",optional = true}
+capnp = { version = "0.25.0",optional = true}
 thiserror.workspace = true
 
 # Json
 serde = { version = "1.0.188" ,optional = true, features = ["derive"] }
 serde_json = {version = "1.0.107",optional = true}
-base64 = {version = "0.21.4",optional = true}
+base64 = {version = "0.22.0",optional = true}
 
 # Proto
 prost = {workspace = true, optional = true}
@@ -24,8 +24,8 @@ prost-types = {workspace = true, optional = true}
 bytes = {workspace = true, optional = true}
 
 [build-dependencies]
-capnpc = "0.18.0"
+capnpc = "0.25.0"
 prost-build = "0.12"
 
 [dev-dependencies]
-criterion = { version = "0.5" }
+criterion = { version = "0.8" }
